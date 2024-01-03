@@ -14,7 +14,7 @@ export function ModalTrocaSenha ({handleClose, email}){
     if (!docSnap.exists()){msg = 'Digite um email válido.'} 
     if (docSnap.exists()){
         recuperaSenha();
-        msg = '\tE-mail enviado.\n Verifique sua caixa de E-mail.'
+        msg = '\tE-mail enviado.\n Verifique sua caixa de E -mail.'
     }
 
     return(
