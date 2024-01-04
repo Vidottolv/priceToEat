@@ -4,13 +4,39 @@ import { useState } from 'react';
 import * as animatable from 'react-native-animatable'
 import  { RadioButtonItem, RadioButtonGroup } from 'expo-radio-button';
 import NumericInput from 'react-native-numeric-input'
+import { firestore, auth } from '../../../controller';
+import {onAuthStateChanged} from 'firebase/auth';
+import { collection, addDoc } from "firebase/firestore"; 
+
+
 
 
 export function ModalCadastroIngrediente({ handleClose }){
-    const [nomeIng, setNomeIng] = useState('');
-    const [precoIng, setPrecoIng] = useState();
+    const [nomeProduto, setNomeProduto] = useState('');
+    const [precoProduto, setPrecoProduto] = useState();
     const [tamProdBruto, setTamProdBruto] = useState();
-    const [current, setCurrent] = useState(2);
+    const [current, setCurrent] = useState(1);
+  
+     
+    async function cadastraProduto (){
+        const usuario = onAuthStateChanged(auth,(user) => {
+            if(user){
+                 const uid = user.uid;
+                 const docRef = addDoc(collection(firestore, 'produtos'), {
+                    Nome: nomeProduto,
+                    PrecoProd: precoProduto,
+                    TamProd: tamProdBruto,
+                    UnidadeMedida: current,
+                    uid:uid,
+                  });
+                  console.log(docRef)
+                  setNomeProduto('');
+                  setPrecoProduto(0);
+                  setTamProdBruto(0);
+                  setCurrent(1);
+                }
+        })
+      }
 
     return(
         <SafeAreaView style={styles.container}>
@@ -30,8 +56,8 @@ export function ModalCadastroIngrediente({ handleClose }){
                     <TextInput
                         placeholder="Digite o ingrediente"
                         placeholderTextColor={'#F3F3FF'}
-                        value={nomeIng}
-                        onChangeText={(value) => setNomeIng(value)}
+                        value={nomeProduto}
+                        onChangeText={(value) => setNomeProduto(value)}
                         style={styles.input}/>
                 <Text style={styles.subtitle}>Unidade de Medida</Text>
                 <RadioButtonGroup
@@ -46,7 +72,7 @@ export function ModalCadastroIngrediente({ handleClose }){
                 </RadioButtonGroup>
                 <Text style={styles.subtitle}>Preço do produto</Text>
                     <NumericInput 
-                        value={precoIng} onChange={value => setPrecoIng(value)}
+                        value={precoProduto} onChange={value => setPrecoProduto(value)}
                         rounded valueType='real'
                         totalWidth={170} totalHeight={50}
                         textColor={'white'} borderColor={'#F3F3FF'} rightButtonBackgroundColor={'#F3F3FF'} leftButtonBackgroundColor={'#F3F3FF'}/>
@@ -58,6 +84,9 @@ export function ModalCadastroIngrediente({ handleClose }){
                         totalWidth={170} totalHeight={50}
                         textColor={'white'} borderColor={'#F3F3FF'} rightButtonBackgroundColor={'#F3F3FF'} leftButtonBackgroundColor={'#F3F3FF'}/>
                 {/* <Text style={styles.subtitle}>Lorem Ipsum este pur şi simplu o machetă pentru text a industriei tipografice. Lorem Ipsum a fost macheta standard a industriei încă din secolul al XVI-lea, când un tipograf anonim a luat o planşetă de litere şi le-a amestecat pentru a crea o carte demonstrativă pentru literele respective. Nu doar că a supravieţuit timp de cinci secole, dar şi a facut saltul în tipografia electronică practic neschimbată. A fost popularizată în anii '60 odată cu ieşirea colilor Letraset care conţineau pasaje Lorem Ipsum, iar mai recent, prin programele de publicare pentru calculator, ca Aldus PageMaker care includeau versiuni de Lorem Ipsum.</Text> */}
+                <TouchableOpacity style={styles.buttonCadastrar} onPress={cadastraProduto}>
+                    <Text style={styles.textButton}>Cadastrar</Text>
+                </TouchableOpacity>
                 </ScrollView>
             </animatable.View>
     </SafeAreaView>
@@ -112,7 +141,6 @@ const styles = StyleSheet.create({
     underline: {
         textDecorationLine: 'underline'
     },
-
     radio:{
         borderColor:'#FFF',
         marginTop:1,
@@ -126,5 +154,22 @@ const styles = StyleSheet.create({
         color:'#FFF',
         marginBottom:10
     },
+    buttonCadastrar:{
+        flex: 1,
+        justifyContent:'center',
+        alignItems:'center',
+        height:40,
+        marginTop:30,
+        marginBottom:6,
+        padding:4,
+        borderRadius:40,
+        margin: '5%',
+        borderWidth: 1,
+        borderColor:'#FFF'
+    },
+    textButton:{
+        color:'#F3F3FF',
+        fontWeight:'bold'
+    }
 
 })

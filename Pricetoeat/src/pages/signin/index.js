@@ -1,17 +1,29 @@
+import { signInWithEmailAndPassword, getAuth} from 'firebase/auth'
 import React, { useState } from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Alert} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import * as animatable from 'react-native-animatable';
 import { Ionicons } from "@expo/vector-icons";
+import app from "../../firebaseConfig";
     
 import { ModalTrocaSenha } from '../../components/modais/modalTrocaSenha';
-import { handleSignIn } from '../../controller';
 
 export default function Signin(){
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [escondeSenha, setEscondeSenha] = useState(true);
+    const auth = getAuth(app)
+
+    const handleSignIn = () => {
+        signInWithEmailAndPassword(auth,email,password)
+        .then((userCredential) => {
+            navigation.navigate('home')
+            const user = userCredential.user;
+            console.log('sucesso')
+        }).catch(error => {
+            console.log(error)
+        })}
 
     return(
         <View style={styles.container}>
@@ -54,7 +66,7 @@ export default function Signin(){
                 </TouchableOpacity>    
                 <TouchableOpacity 
                     style={styles.button} 
-                    onPress={handleSignIn(email,senha)}>
+                    onPress={handleSignIn}>
                         <Text style={styles.buttonText}>Acessar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
@@ -62,12 +74,12 @@ export default function Signin(){
                     onPress={() => navigation.navigate('cadastroUsuario')}>
                         <Text style={[styles.registerText, styles.underline]}>Novo por aqui? Cadastre-se</Text>
                 </TouchableOpacity>
-                <Modal 
+                {/* <Modal 
                     visible={SenhaVisible}
                     animationType='fade' 
                     transparent={true}>
                         <ModalTrocaSenha handleClose={() => setSenhaVisible(false)} email={email}/>
-                </Modal>
+                </Modal> */}
             </animatable.View>
     </View>
 )}

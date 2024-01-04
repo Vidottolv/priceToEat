@@ -1,10 +1,18 @@
-import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth';
+import {createUserWithEmailAndPassword, getAuth, onAuthStateChanged} from 'firebase/auth';
 import {getFirestore, collection, doc, setDoc} from 'firebase/firestore'
 import app from '../firebaseConfig';
 
 
 const auth = getAuth(app)
 const firestore = getFirestore(app)
+
+
+const usuario = onAuthStateChanged(auth,(user) => {
+    if(user){
+         const uid = user.uid;
+         console.log(uid);
+    }
+})
 
 const handleCreateAccount = (email, senha) => {
     createUserWithEmailAndPassword(
@@ -25,14 +33,4 @@ const handleCreateAccount = (email, senha) => {
     })
 }
 
-const handleSignIn = (email, senha) => {
-    signInWithEmailAndPassword(auth,email,password)
-    .then((userCredential) => {
-        navigation.navigate('home')
-        const user = userCredential.user;
-        console.log('sucesso')
-    }).catch(error => {
-        console.log(error)
-    })}
-
-export {handleCreateAccount, handleSignIn};
+export {handleCreateAccount, firestore, usuario, auth};
