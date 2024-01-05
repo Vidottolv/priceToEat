@@ -1,6 +1,6 @@
 import { React, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Modal}from 'react-native';
-import { ModalCadastroIngrediente } from '../../../components/modais/modalCadstIngrediente';
+import { ModalCadastroIngrediente } from '../../../components/modais/modalCadstProduto';
 import { ModalCadastroReceita } from '../../../components/modais/modalCadstReceita';
 
 export function Cadastros(){

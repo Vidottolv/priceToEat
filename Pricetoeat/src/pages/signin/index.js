@@ -13,6 +13,8 @@ export default function Signin(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [escondeSenha, setEscondeSenha] = useState(true);
+    const [SenhaVisible, setSenhaVisible] = useState(false);
+    const handleOpenModalSenha = () => {setSenhaVisible(true);}
     const auth = getAuth(app)
 
     const handleSignIn = () => {
@@ -61,7 +63,7 @@ export default function Signin(){
                 </View>
                 <TouchableOpacity 
                     style={styles.buttonForget} 
-                    >
+                    onPress={handleOpenModalSenha}>
                         <Text style={[styles.forgetText, styles.underline]}>Esqueceu a senha?</Text>
                 </TouchableOpacity>    
                 <TouchableOpacity 
@@ -74,12 +76,12 @@ export default function Signin(){
                     onPress={() => navigation.navigate('cadastroUsuario')}>
                         <Text style={[styles.registerText, styles.underline]}>Novo por aqui? Cadastre-se</Text>
                 </TouchableOpacity>
-                {/* <Modal 
+                <Modal 
                     visible={SenhaVisible}
                     animationType='fade' 
                     transparent={true}>
                         <ModalTrocaSenha handleClose={() => setSenhaVisible(false)} email={email}/>
-                </Modal> */}
+                </Modal>
             </animatable.View>
     </View>
 )}

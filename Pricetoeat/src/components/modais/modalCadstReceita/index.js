@@ -1,22 +1,25 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'
+import * as animatable from 'react-native-animatable'
+
 
 
 export function ModalCadastroReceita({ handleClose }){
     return(
-        <View style={styles.container}>
-            <View style={styles.content}>
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity style={{flex:1, zIndex:9}}></TouchableOpacity>
+            <animatable.View animation={'fadeInUpBig'} style={styles.content}>
                 <View style={styles.headerModal}>
                     <Text style={[styles.title, styles.underline]}>Cadastrar Receita</Text>
-                    <TouchableOpacity style={styles.backButton} onPress={handleClose}>
-                        <Ionicons
-                            size={30} 
-                            color={'#FFF'}
-                            name='close-circle-outline'/>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.backButton} onPress={handleClose}>
+                            <Ionicons
+                                size={30} 
+                                color={'#FFF'}
+                                name='close-circle-outline'/>
+                        </TouchableOpacity>
                 </View>
-            </View>
-        </View>
+            </animatable.View>
+        </SafeAreaView>
     )
 }
 
@@ -29,16 +32,25 @@ const styles = StyleSheet.create({
     },
     content:{
         backgroundColor:'#E06F72',
-        height:'80%',
-        width:'90%',
-        borderRadius:24
+        height:'85%',
+        width:'100%',
+        borderRadius:24,
+        paddingStart:'5%',
+        paddingEnd:'5%',
     },
     title:{
-        fontSize:20,
+        fontSize:24,
         fontWeight:'bold',
         color:'#FFF',
-        marginLeft:'7%',
+        marginLeft:'1%',
         marginTop:'3%'
+    },
+    subtitle:{
+        fontSize:20,
+        fontWeight:'bold',
+        color:'#F3F3FF',
+        marginTop:'5%',
+        marginBottom:'2%'  
     },
     backButton:{
         marginTop:'3%',
