@@ -1,15 +1,28 @@
-import { React } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity }from 'react-native'
+import { React, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Modal }from 'react-native'
+import { ModalConsultaProduto } from '../../../components/modais/modalConsultaProduto'
 
 export function Consultas(){
+  const [modalProdVisible, setModalProdVisible] = useState(false);
+  const [modalRecVisible, setModalRecVisible] = useState(false);
+
+
+  const handleOpenModalProd = () => {
+    setModalProdVisible(true);
+  }
+  const handleOpenModalRec = () => {
+    setModalRecVisible(true);
+  }
   return (
     <View style={styles.container}>
       <View style={styles.containerRecipes}>
-        <Text style={[styles.title, styles.underline]}>Consultar Ingredientes</Text>
+        <Text style={[styles.title, styles.underline]}>Consultar Produtos</Text>
         <Text style={styles.textCompound}>
-          Aba destinada para consultar todos os ingredientes do seu restaurante
+          Aba destinada para consultar todos os produtos do seu restaurante
         </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={handleOpenModalProd}>
           <Text style={styles.buttonText}>Consultar</Text>
         </TouchableOpacity>
       </View>
@@ -18,10 +31,26 @@ export function Consultas(){
         <Text style={styles.textCompound}>
         Aba destinada para a consulta de todas as receitas do seu restaurante
         </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button}
+                    onPress={handleOpenModalRec}>
           <Text style={styles.buttonText}>Consultar</Text>
         </TouchableOpacity>
       </View>
+      <Modal 
+      visible={modalProdVisible}
+      animationType='fade' 
+      transparent={true}
+      onRequestClose={() => setModalProdVisible(false)}>
+        <ModalConsultaProduto 
+          handleClose={() => setModalProdVisible(false)}/>
+    </Modal>
+    {/* <Modal 
+      visible={modalRecVisible} 
+      animationType='fade' 
+      transparent={true}>
+        <ModalCadastroReceita 
+          handleClose={() => setModalRecVisible(false)}/>
+    </Modal> */}
     </View>
   )
 }

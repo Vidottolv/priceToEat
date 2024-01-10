@@ -4,12 +4,12 @@ import { ModalCadastroIngrediente } from '../../../components/modais/modalCadstP
 import { ModalCadastroReceita } from '../../../components/modais/modalCadstReceita';
 
 export function Cadastros(){
-  const [modalIngVisible, setModalIngVisible] = useState(false);
+  const [modalProdVisible, setModalProdVisible] = useState(false);
   const [modalRecVisible, setModalRecVisible] = useState(false);
 
 
-  const handleOpenModalIng = () => {
-    setModalIngVisible(true);
+  const handleOpenModalProd = () => {
+    setModalProdVisible(true);
   }
   const handleOpenModalRec = () => {
     setModalRecVisible(true);
@@ -23,7 +23,18 @@ export function Cadastros(){
           </Text>
           <TouchableOpacity 
             style={styles.button} 
-            onPress={handleOpenModalIng}>
+            onPress={handleOpenModalProd}>
+              <Text style={styles.buttonText}>Cadastrar</Text>
+          </TouchableOpacity>
+      </View>
+      <View style={styles.containerRecipes}>
+        <Text style={[styles.title, styles.underline]}>Cadastrar Bases</Text>
+          <Text style={styles.textCompound}>
+            Cadastre bases de receitas, como massas de bolo, molhos elaborados, etc.
+          </Text>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={handleOpenModalRec}>
               <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
       </View>
@@ -39,12 +50,12 @@ export function Cadastros(){
           </TouchableOpacity>
       </View>
     <Modal 
-      visible={modalIngVisible}
+      visible={modalProdVisible}
       animationType='fade' 
       transparent={true}
-      onRequestClose={() => setModalIngVisible(false)}>
+      onRequestClose={() => setModalProdVisible(false)}>
         <ModalCadastroIngrediente 
-          handleClose={() => setModalIngVisible(false)}/>
+          handleClose={() => setModalProdVisible(false)}/>
     </Modal>
     <Modal 
       visible={modalRecVisible} 
@@ -69,7 +80,8 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:16,
     margin:4,
-    borderColor:'#FFF'
+    borderColor:'#FFF',
+    padding:11
   },
   title:{
     fontSize:24,
@@ -87,8 +99,6 @@ const styles = StyleSheet.create({
   button:{
     height:50,
     alignItems: 'center',
-    marginTop:40,
-    marginBottom:6,
     padding:12,
     borderRadius:40,
     backgroundColor:"#E19063",

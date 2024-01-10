@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ScrollView,} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ScrollView, Modal} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'
 import { useState } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -7,7 +7,7 @@ import NumericInput from 'react-native-numeric-input'
 import { firestore, auth } from '../../../controller';
 import {onAuthStateChanged} from 'firebase/auth';
 import { collection, addDoc } from "firebase/firestore"; 
-
+import { modalSucessoProd } from '../modalSucessoProd';
 
 
 
@@ -16,6 +16,16 @@ export function ModalCadastroIngrediente({ handleClose }){
     const [precoProduto, setPrecoProduto] = useState();
     const [tamProdBruto, setTamProdBruto] = useState();
     const [current, setCurrent] = useState(1);
+    const [modalSucesso, setModalSucesso] = useState(false);
+    const [modalErro, setModalErro] = useState(false);
+  
+  
+    const handleOpenModalSucesso = () => {
+      setModalSucesso(true);
+    }
+    const handleOpenModalErro = () => {
+      setModalErro(true);
+    }
   
      
     async function cadastraProduto (){
@@ -29,12 +39,13 @@ export function ModalCadastroIngrediente({ handleClose }){
                     UnidadeMedida: current,
                     IDUsuario:uid,
                   });
-                  console.log(docRef)
+                  console.log(docRef);
                   setNomeProduto('');
-                  setPrecoProduto(0);
-                  setTamProdBruto(0);
-                  setCurrent(1);
-                }
+                //   setPrecoProduto(0);
+                //   setTamProdBruto(0);
+                //   setCurrent(1);
+            }
+                handleOpenModalErro
         })
       }
 
@@ -87,6 +98,20 @@ export function ModalCadastroIngrediente({ handleClose }){
                     <Text style={styles.textButton}>Cadastrar</Text>
                 </TouchableOpacity>
                 </ScrollView>
+                <Modal 
+                visible={modalSucesso}
+                animationType='fade' 
+                transparent={true}
+                onRequestClose={() => setModalSucesso(false)}>
+                <modalSucessoProd handleClose={() => setModalSucesso(false)}/>
+            </Modal>
+              <Modal 
+                visible={modalErro} 
+                animationType='fade' 
+                transparent={true}>
+                  <modalErroProd 
+                    handleClose={() => setModalErro(false)}/>
+              </Modal>
             </animatable.View>
     </SafeAreaView>
     )
