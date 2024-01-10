@@ -6,24 +6,32 @@ import { firestore, auth } from '../../../controller';
 import {onAuthStateChanged} from 'firebase/auth';
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; 
 import { hideMessage, showMessage } from 'react-native-flash-message';
+import { useNavigation } from '@react-navigation/native';
 
 function ProdutoItem({ produto }) {
 
-    // const showFlashMessage = () => {
-    //     showMessage({
-    //       message: 'Item Excluído.',
-    //       type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
-    //     });
-    //   };
+    const flashMessageSucesso = () => {
+        showMessage({
+          message: 'Item Excluído.',
+          type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+        });
+      };
+    const flashMessageErro = () => {
+      showMessage({
+        message: 'Erro ao excluir item',
+        type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+      });
+    };
     
     const deletar = async() => {
         try{
             const produtoRef = doc(collection(firestore, 'produtos'), produto.id);
             await deleteDoc(produtoRef);
             console.log('excluído');
-            // showFlashMessage();
-        } catch(error){
+            flashMessageSucesso();
+                } catch(error){
             console.error('erro ao excluir o produto', error);
+            flashMessageErro();
         }
     }
     return (
@@ -41,8 +49,9 @@ function ProdutoItem({ produto }) {
 
 
 
-export function ModalConsultaProduto({ handleClose }){
+export function ConsultaProduto(){
     const [produtos, setProdutos] = useState([]);
+    const navigation = useNavigation();
   
      async function consultarProdutos() {
         onAuthStateChanged(auth, async(user) => {
@@ -71,119 +80,84 @@ export function ModalConsultaProduto({ handleClose }){
 
     return(
         <SafeAreaView style={styles.container}>
-            <TouchableOpacity style={{flex:1, zIndex:9}}></TouchableOpacity>
-            <animatable.View animation={'fadeInUpBig'} style={styles.content}>
-                <View style={styles.headerModal}>
-                    <Text style={[styles.title,styles.underline]}>Lista de Produtos:</Text>
-                        <TouchableOpacity style={styles.backButton} onPress={handleClose}>
-                                <Ionicons
-                                    size={30} 
-                                    color={'#FFF'}
-                                    name='close-circle-outline'/>
-                        </TouchableOpacity>
-                </View>
-            <FlatList
+            <animatable.View  style={styles.content} animation={'fadeInRight'}>
+                    <View style={styles.headerModal}>
+                        <Text style={[styles.title,styles.underline]}>Consultar Produto</Text>
+                            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
+                                    <Ionicons
+                                        size={30} 
+                                        color={'#FFF'}
+                                        name='home'/>
+                            </TouchableOpacity>
+                    </View>
+            <FlatList style={styles.flat}
                 data={produtos}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ProdutoItem produto={item} />}/>
-            </animatable.View>
+                </animatable.View>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'rgba(24,24,24,0.6)',
+        backgroundColor:'#E7A17A',
         alignItems:'center',
         justifyContent:'center',
         flex:1
     },
     content:{
-        backgroundColor:'#E06F72',
-        height:'85%',
-        width:'100%',
-        borderRadius:24,
-        paddingStart:'5%',
-        paddingEnd:'5%',
+        flex:1,
+        width:'90%',
     },
     title:{
         fontSize:24,
         fontWeight:'bold',
         color:'#FFF',
         marginLeft:'1%',
-        marginTop:'3%'
     },
     subtitle:{
         fontSize:20,
         fontWeight:'bold',
-        color:'#F3F3FF',
+        color:'#FFF',
         marginTop:'2%',
         marginBottom:'2%'  
     },
     textCompound:{
         fontSize:14,
         fontWeight:'bold',
-        color:'#F3F3FF',
+        color:'#FFF',
         marginBottom:'1%'  
     },
-    input:{
-        color:'#F3F3FF',
-        borderBottomWidth:1,
-        height:40,
-        fontSize:14,
-        borderBottomColor:'#DADADA'
-    },
     backButton:{
-        marginTop:'3%',
-        marginRight:'1%',
+        marginRight:'5%',
     },
     headerModal:{
         flexDirection:'row',
         justifyContent:'space-between',
-        marginBottom:10
+        marginBottom:10,
+        marginTop:'10%',
     },
     underline: {
         textDecorationLine: 'underline'
     },
-    radio:{
-        borderColor:'#FFF',
-        marginTop:1,
-    },
-    textRadio:{
-        color:'#FFF', 
-        fontWeight:'bold'
-    },
-    rodape:{
-        fontSize: 10,
-        color:'#FFF',
-        marginBottom:10
-    },
-    buttonCadastrar:{
-        flex: 1,
-        justifyContent:'center',
-        alignItems:'center',
-        height:40,
-        marginTop:30,
-        marginBottom:6,
-        padding:4,
-        borderRadius:40,
-        margin: '5%',
-        borderWidth: 1,
-        borderColor:'#FFF'
-    },
     textButton:{
-        color:'#F3F3FF',
+        color:'#FFF',
         fontWeight:'bold'
     },
     buttonProduto:{
         borderWidth:1,
         borderRadius:30,
-        marginBottom:'1%',
-        borderColor:'#FFF'
+        marginBottom:'2%',
+        borderColor:'#FFF',
+        width:'95%'
     },
     viewProduto:{
         marginLeft:'8%',
-        marginBottom:'1%'
+        marginBottom:'2%'
+    },
+    flat:{
+        marginTop:'5%'
     }
 
 })

@@ -1,16 +1,9 @@
 import { React, useState } from 'react'
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, TouchableOpacity, Modal}from 'react-native';
-import { ModalCadastroIngrediente } from '../../../components/modais/modalCadstProduto';
-import { ModalCadastroReceita } from '../../../components/modais/modalCadstReceita';
-
 export function Cadastros(){
-  const [modalProdVisible, setModalProdVisible] = useState(false);
   const [modalRecVisible, setModalRecVisible] = useState(false);
-
-
-  const handleOpenModalProd = () => {
-    setModalProdVisible(true);
-  }
+  const navigation = useNavigation();
   const handleOpenModalRec = () => {
     setModalRecVisible(true);
   }
@@ -23,8 +16,8 @@ export function Cadastros(){
           </Text>
           <TouchableOpacity 
             style={styles.button} 
-            onPress={handleOpenModalProd}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
+            onPress={() => navigation.navigate('cadastroProduto')}>
+            <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
       </View>
       <View style={styles.containerRecipes}>
@@ -34,7 +27,7 @@ export function Cadastros(){
           </Text>
           <TouchableOpacity 
             style={styles.button}
-            onPress={handleOpenModalRec}>
+            onPress={() => navigation.navigate('cadastroBase')}>
               <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
       </View>
@@ -45,25 +38,10 @@ export function Cadastros(){
           </Text>
           <TouchableOpacity 
             style={styles.button}
-            onPress={handleOpenModalRec}>
+            onPress={() => navigation.navigate('cadastroReceita')}>
               <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
       </View>
-    <Modal 
-      visible={modalProdVisible}
-      animationType='fade' 
-      transparent={true}
-      onRequestClose={() => setModalProdVisible(false)}>
-        <ModalCadastroIngrediente 
-          handleClose={() => setModalProdVisible(false)}/>
-    </Modal>
-    <Modal 
-      visible={modalRecVisible} 
-      animationType='fade' 
-      transparent={true}>
-        <ModalCadastroReceita 
-          handleClose={() => setModalRecVisible(false)}/>
-    </Modal>
     </View>
   )
 }

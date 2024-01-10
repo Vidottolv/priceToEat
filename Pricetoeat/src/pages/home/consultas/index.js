@@ -1,15 +1,12 @@
 import { React, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Modal }from 'react-native'
-import { ModalConsultaProduto } from '../../../components/modais/modalConsultaProduto'
+import ConsultaProduto from '../../../components/modais/modalConsultaProduto';
+import { useNavigation } from '@react-navigation/native';
 
 export function Consultas(){
-  const [modalProdVisible, setModalProdVisible] = useState(false);
   const [modalRecVisible, setModalRecVisible] = useState(false);
+  const navigation = useNavigation()
 
-
-  const handleOpenModalProd = () => {
-    setModalProdVisible(true);
-  }
   const handleOpenModalRec = () => {
     setModalRecVisible(true);
   }
@@ -22,7 +19,7 @@ export function Consultas(){
         </Text>
         <TouchableOpacity 
           style={styles.button}
-          onPress={handleOpenModalProd}>
+          onPress={() => navigation.navigate('consultaProduto')}>
           <Text style={styles.buttonText}>Consultar</Text>
         </TouchableOpacity>
       </View>
@@ -36,21 +33,6 @@ export function Consultas(){
           <Text style={styles.buttonText}>Consultar</Text>
         </TouchableOpacity>
       </View>
-      <Modal 
-      visible={modalProdVisible}
-      animationType='fade' 
-      transparent={true}
-      onRequestClose={() => setModalProdVisible(false)}>
-        <ModalConsultaProduto 
-          handleClose={() => setModalProdVisible(false)}/>
-    </Modal>
-    {/* <Modal 
-      visible={modalRecVisible} 
-      animationType='fade' 
-      transparent={true}>
-        <ModalCadastroReceita 
-          handleClose={() => setModalRecVisible(false)}/>
-    </Modal> */}
     </View>
   )
 }

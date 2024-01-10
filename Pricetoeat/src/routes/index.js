@@ -7,6 +7,8 @@ export default function Routes(){
     return(
         <NavigationContainer>
             <StackRoutes/>
+            <FlashMessage  
+                position={'bottom'}/>
         </NavigationContainer>
     )
 }
