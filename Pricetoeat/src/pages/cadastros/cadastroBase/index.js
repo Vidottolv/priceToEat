@@ -1,15 +1,16 @@
-import {View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ScrollView, Modal} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Modal} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
 import {onAuthStateChanged} from 'firebase/auth';
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; 
+import { collection, getDocs} from "firebase/firestore"; 
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import { ModalAdicionar } from '../../../components/modais/modalAdicionar';
 
 function ProdutoItem({ produto }) {
+    const navigation = useNavigation();
     const [adicionar, setAdicionar] = useState(false);
     const handleModalAdicionar = () => {setAdicionar(true);}
 
@@ -19,7 +20,6 @@ function ProdutoItem({ produto }) {
     //       type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
     //     });
     //   };
-
     return (
       <TouchableOpacity 
         style={styles.buttonProduto}
@@ -33,18 +33,14 @@ function ProdutoItem({ produto }) {
                 visible={adicionar}
                 animationType='fade' 
                 transparent={true}>
-                <ModalAdicionar/>
+                <ModalAdicionar produto={produto} handleClose={() => setAdicionar(false)}/>
             </Modal> 
       </TouchableOpacity>
     );
   }
-
-
-
 export function CadastroBase(){
     const [produtos, setProdutos] = useState([]);
     const navigation = useNavigation();
-  
      async function consultarProdutos() {
         onAuthStateChanged(auth, async(user) => {
             if (user) {
@@ -65,14 +61,12 @@ export function CadastroBase(){
             }
         })
      }
-
      useEffect(() => {
         consultarProdutos();
-     })
-
-    return(
+    }, []);
+        return(
         <SafeAreaView style={styles.container}>
-            <animatable.View  style={styles.content} animation={'fadeInRight'}>
+            <animatable.View  style={styles.content} animation={'fadeInRightBig'}>
                     <View style={styles.headerModal}>
                         <Text style={[styles.title,styles.underline]}>Selecionar Produtos</Text>
                             <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
@@ -82,6 +76,7 @@ export function CadastroBase(){
                                         name='home'/>
                             </TouchableOpacity>
                     </View>
+                    <Text style={styles.observation}>⚠️OBS: Segure apertado o ingrediente que você quer adicionar na base. (Clique no botão ✔️ para ver os produtos selecionados)</Text>
             <FlatList style={styles.flat}
                 data={produtos}
                 keyExtractor={(item) => item.id}
@@ -90,7 +85,6 @@ export function CadastroBase(){
         </SafeAreaView>
     )
 }
-
 const styles = StyleSheet.create({
     container:{
         backgroundColor:'#E7A17A',
@@ -113,7 +107,6 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         color:'#FFF',
         marginTop:'2%',
-        marginBottom:'2%'  
     },
     textCompound:{
         fontSize:14,
@@ -150,6 +143,10 @@ const styles = StyleSheet.create({
     },
     flat:{
         marginTop:'5%'
+    },
+    observation:{
+        color:'#FFF',
+        marginBottom:'5%'
     }
 
 })

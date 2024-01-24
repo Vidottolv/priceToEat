@@ -13,7 +13,8 @@ function ProdutoItem({ produto }) {
     const flashMessageSucesso = () => {
         showMessage({
           message: 'Item Excluído.',
-          type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+          type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger',
+          backgroundColor:'#8ff638'
         });
       };
     const flashMessageErro = () => {
@@ -90,6 +91,9 @@ export function ConsultaProduto(){
                                         name='home'/>
                             </TouchableOpacity>
                     </View>
+                    <Text style={styles.observation}>
+                    ⚠️ OBS: Segure apertado para excluir o produto.
+                    </Text>
             <FlatList style={styles.flat}
                 data={produtos}
                 keyExtractor={(item) => item.id}
@@ -158,6 +162,10 @@ const styles = StyleSheet.create({
     },
     flat:{
         marginTop:'5%'
+    },
+    observation:{
+        color:'#FFF',
+        marginBottom:'5%'
     }
 
 })

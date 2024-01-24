@@ -1,71 +1,109 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {Ionicons} from '@expo/vector-icons';
-import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../../controller';
 
 
-export function ModalAdicionar (){  
+export function ModalAdicionar({ produto, handleClose }) {
+
+    async function addProdutoArray({ produto }) {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const array = [];
+                    array.push(produto);
+                    console.log(array);
+                    handleClose();
+                } catch (error) {
+                    console.error('erro', error);
+                }
+            }
+        });
+    }
+
     const navigation = useNavigation();
-
-    return(
+    return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <View style={styles.headerModal}>
-                    <Text style={[styles.title, styles.underline]}>Erro:</Text>
-                        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
-                            <Ionicons
-                                size={30} 
-                                color={'#FFF'}
-                                name='close-circle-outline'/>
-                        </TouchableOpacity>
-                </View>
-                <Text style={styles.msgSenha}>Falha ao cadastrar produto!</Text>
-                    <TouchableOpacity>
-                        <Text>Fechar</Text>
+                    <Text style={styles.title}>Adicionar produto?</Text>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
+                        <Ionicons size={35} color={'#FFF'} name='close-circle-outline' />
                     </TouchableOpacity>
+                </View>
+                <Text style={styles.text}>Aceite a adição do Produto para que ele faça parte da base.</Text>
+                <View style={styles.centerModal}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => addProdutoArray({ produto })}
+                    >
+                        <Text style={styles.textButton}>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('home')}>
+                        <Text style={styles.textButton}>Não</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
-    )
+    );
 }
 
+
 const styles = StyleSheet.create({
-    container:{
-        backgroundColor:'rgba(24,24,24,0.4)',
-        alignItems:'center',
-        justifyContent:'center',
-        flex:1
+    container: {
+        backgroundColor: 'rgba(24,24,24,0.4)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1
     },
-    content:{
-        backgroundColor:'#E06F72',
-        height:'20%',
-        width:'80%',
-        borderRadius:24,
+    content: {
+        backgroundColor: '#E06F72',
+        height: '30%',
+        width: '80%',
+        borderRadius: 22,
+        borderWidth:1,
+        borderColor:'#FFF'
     },
-    title:{
-        fontSize:22,
-        fontWeight:'bold',
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#FFF',
+        marginLeft: '7%',
+        marginTop: '3%'
+    },
+    textButton: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
+    backButton: {
+        marginTop: '3%',
+        marginRight: '5%',
+    },
+    headerModal: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    centerModal: {
+        marginTop: '20%',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+    button: {
+        borderWidth: 2,
+        borderColor: '#FFF',
+        borderRadius: 25,
+        height: 40,
+        width: '35%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    text:{
         color:'#FFF',
         marginLeft:'7%',
-        marginTop:'3%'
-    },
-    msgSenha:{
-        marginTop:20,
-        marginLeft:20,
-        justifyContent:'center',
-        alignItems:'center',
-        fontSize:18,
-        color:'#FFF',
-        fontWeight:'bold'
-    },
-    backButton:{
-        marginTop:'3%',
-        marginRight:'5%',
-    },
-    headerModal:{
-        flexDirection:'row',
-        justifyContent:'space-between'
-    },
-    underline: {
-        textDecorationLine: 'underline'
-       },
+        marginRight:'7%'
+    }
 })

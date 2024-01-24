@@ -1,15 +1,10 @@
 import { React, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Modal }from 'react-native'
-import ConsultaProduto from '../../../components/modais/modalConsultaProduto';
 import { useNavigation } from '@react-navigation/native';
 
 export function Consultas(){
-  const [modalRecVisible, setModalRecVisible] = useState(false);
   const navigation = useNavigation()
 
-  const handleOpenModalRec = () => {
-    setModalRecVisible(true);
-  }
   return (
     <View style={styles.container}>
       <View style={styles.containerRecipes}>
@@ -24,12 +19,22 @@ export function Consultas(){
         </TouchableOpacity>
       </View>
       <View style={styles.containerRecipes}>
+        <Text style={[styles.title, styles.underline]}>Consultar Bases</Text>
+        <Text style={styles.textCompound}>
+          Aba destinada para consultar todos as baes de receita do seu restaurante
+        </Text>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('consultaProduto')}>
+          <Text style={styles.buttonText}>Consultar</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.containerRecipes}>
         <Text style={[styles.title, styles.underline]}>Consultar Receitas</Text>
         <Text style={styles.textCompound}>
         Aba destinada para a consulta de todas as receitas do seu restaurante
         </Text>
-        <TouchableOpacity style={styles.button}
-                    onPress={handleOpenModalRec}>
+        <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Consultar</Text>
         </TouchableOpacity>
       </View>
@@ -41,7 +46,7 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor:"#E7A17A",
     justifyContent:'center',
-    alignItems:'center'
+    alignItems:'center',
   },
   containerRecipes:{
     height:'30%',
@@ -49,7 +54,8 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:16,
     margin:4,
-    borderColor:'#FFF'
+    borderColor:'#FFF',
+    padding:11
   },
   title:{
     fontSize:24,
@@ -67,8 +73,6 @@ const styles = StyleSheet.create({
   button:{
     height:50,
     alignItems: 'center',
-    marginTop:40,
-    marginBottom:6,
     padding:12,
     borderRadius:40,
     backgroundColor:"#E19063",

@@ -1,12 +1,11 @@
 import { React, useState } from 'react'
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, Modal}from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity}from 'react-native';
+
+
 export function Cadastros(){
-  const [modalRecVisible, setModalRecVisible] = useState(false);
   const navigation = useNavigation();
-  const handleOpenModalRec = () => {
-    setModalRecVisible(true);
-  }
+
   return (
     <View style={styles.container}>
       <View style={styles.containerRecipes}>
@@ -34,7 +33,7 @@ export function Cadastros(){
       <View style={styles.containerRecipes}>
         <Text style={[styles.title, styles.underline]}>Cadastrar Receitas</Text>
           <Text style={styles.textCompound}>
-            Aqui, você poderá cadastrar todas as receitas de seu restaurante.
+            Nesta aba, você poderá cadastrar todas as receitas usadas no seu restaurante.
           </Text>
           <TouchableOpacity 
             style={styles.button}

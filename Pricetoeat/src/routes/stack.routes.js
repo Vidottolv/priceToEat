@@ -1,6 +1,6 @@
 import Signin from '../pages/signin';
 import Welcome from '../pages/welcome'
-import TabRoutes from './tab.routes';
+import {TabBases, TabRoutes} from './tab.routes';
 import CadastroUsuario from '../pages/cadastroUser';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CadastroProduto from '../pages/cadastros/cadastroProduto';
@@ -50,7 +50,7 @@ export function StackRoutes(){
             />
             <Stack.Screen
             name="cadastroBase"
-            component={CadastroBase}
+            component={TabBases}
             options={{
                 headerShown:false,
             }}
