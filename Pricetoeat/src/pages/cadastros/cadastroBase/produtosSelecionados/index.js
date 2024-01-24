@@ -4,33 +4,37 @@ import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../../controller';
 import {onAuthStateChanged} from 'firebase/auth';
-import { collection, getDocs} from "firebase/firestore"; 
-import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
-import { ModalAdicionar } from '../../../../components/modais/modalAdicionar';
+import { useGlobalContext } from '../../../../components/context/produtoContext';
 
-const ProdutosSelecionados = ({ produto }) => {
+const ProdutosSelecionados = () => {
     const navigation = useNavigation();
-      
+    const { globalArray } = useGlobalContext();  // Obtenha o array de produtos do contexto
+  
     return (
-        <SafeAreaView style={styles.container}>
-            <animatable.View  style={styles.content} animation={'fadeInRightBig'}>
-                    <View style={styles.headerModal}>
-                        <Text style={[styles.title,styles.underline]}>Produtos Selecionados</Text>
-                            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Produtos')}>
-                                    <Ionicons
-                                        size={30} 
-                                        color={'#FFF'}
-                                        name='arrow-back-circle'/>
-                            </TouchableOpacity>
-                    </View>
-            </animatable.View>
-        </SafeAreaView>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <View style={styles.headerModal}>
+            <Text style={[styles.title, styles.underline]}>Produtos Selecionados</Text>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Produtos')}>
+              <Ionicons size={30} color={'#FFF'} name='arrow-back-circle' />
+            </TouchableOpacity>
+          </View>
+  
+          {/* Exibindo a lista de produtos selecionados */}
+          <View>
+          {globalArray.map((produto, index) => (
+            <View key={index}>
+              <Text style={styles.subtitle}>{produto.Nome}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
     );
-};
-
-export default ProdutosSelecionados;
-
+  };
+  
+  export default ProdutosSelecionados;
 const styles = StyleSheet.create({
     container:{
         backgroundColor:'#E7A17A',
