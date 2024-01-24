@@ -11,7 +11,7 @@ export const GlobalProvider = ({ children }) => {
       console.log(newArray);
       return newArray;
     });
-  };
+  };  
 
   const removeItemFromGlobalArray = (index) => {
     const newArray = [...globalArray];

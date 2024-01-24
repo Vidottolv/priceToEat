@@ -7,7 +7,7 @@ import { auth } from '../../../controller';
 import { useGlobalContext } from '../../context/produtoContext';
 
 export function ModalAdicionar({ produto, handleClose }) {
-    const { addToGlobalArray, removeItemFromGlobalArray } = useGlobalContext(); // Extraímos addToGlobalArray diretamente do contexto
+    const { addToGlobalArray } = useGlobalContext(); // Extraímos addToGlobalArray diretamente do contexto
   
     async function addProdutoArray(produto) {
       onAuthStateChanged(auth, async (user) => {
@@ -29,7 +29,7 @@ export function ModalAdicionar({ produto, handleClose }) {
         <View style={styles.content}>
           <View style={styles.headerModal}>
             <Text style={styles.title}>Adicionar produto?</Text>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
+            <TouchableOpacity style={styles.backButton} onPress={() => handleClose()}>
               <Ionicons size={35} color={'#FFF'} name='close-circle-outline' />
             </TouchableOpacity>
           </View>
@@ -41,7 +41,7 @@ export function ModalAdicionar({ produto, handleClose }) {
             >
               <Text style={styles.textButton}>Sim</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => removeItemFromGlobalArray()}>
+            <TouchableOpacity style={styles.button} onPress={() => handleClose()}>
               <Text style={styles.textButton}>Não</Text>
             </TouchableOpacity>
           </View>

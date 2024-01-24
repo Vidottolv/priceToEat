@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Modal} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, TextInput} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -8,31 +8,64 @@ import { useNavigation } from '@react-navigation/native';
 import { useGlobalContext } from '../../../../components/context/produtoContext';
 
 const ProdutosSelecionados = () => {
-    const navigation = useNavigation();
-    const { globalArray } = useGlobalContext();  // Obtenha o array de produtos do contexto
-  
+  const { globalArray, removeItemFromGlobalArray } = useGlobalContext();
+  const navigation = useNavigation();
+  const [nomeProduto, setNomeProduto] = useState('');
+  const [nomeBase, setNomeBase] = useState('');
+
+
+  const renderItem = ({ item }) => {
+    let unidade = '';
+
+    if ( item.UnidadeMedida == '1' ) { unidade = 'kilos'; }
+    else if ( item.UnidadeMedida == '2' ) { unidade = 'gramas'; }
+    else if ( item.UnidadeMedida == '3' ) { unidade = 'litros'; }
+    else if ( item.UnidadeMedida == '4' ) { unidade = 'mililitros'; }
+    else { unidade = 'unidade'; }
+
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>Produtos Selecionados</Text>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Produtos')}>
-              <Ionicons size={30} color={'#FFF'} name='arrow-back-circle' />
-            </TouchableOpacity>
-          </View>
-  
-          {/* Exibindo a lista de produtos selecionados */}
-          <View>
-          {globalArray.map((produto, index) => (
-            <View key={index}>
-              <Text style={styles.subtitle}>{produto.Nome}</Text>
-            </View>
-          ))}
+    <View>
+      <TouchableOpacity 
+        onLongPress={removeItemFromGlobalArray}>
+          <Text style={styles.subtitle}>{item.Nome} - Em {unidade}</Text>
+      </TouchableOpacity>
+        <TextInput
+            placeholder="Digite a Qtd usada."
+            placeholderTextColor={'#F3F3FF'}
+            value={nomeProduto}
+            onChangeText={(value) => setNomeProduto(value)}
+            style={styles.input}/>
+    </View>
+  );
+}
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.headerModal}>
+          <Text style={[styles.title, styles.underline]}>Produtos Selecionados</Text>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
+          <Ionicons
+              size={30} 
+              color={'#FFF'}
+              name='home'/>
+          </TouchableOpacity>
         </View>
+        <Text style={styles.observation}>Segure apertado o nome do produto para excluir ele da base.</Text>
+        <Text style={styles.subtitle}> Nome da base:</Text>
+        <TextInput
+            value={nomeBase}
+            onChangeText={(value) => setNomeBase(value)}
+            style={styles.input}/>
+        <FlatList
+          data={globalArray}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
     </SafeAreaView>
-    );
-  };
+  );
+};
   
   export default ProdutosSelecionados;
 const styles = StyleSheet.create({
@@ -46,6 +79,11 @@ const styles = StyleSheet.create({
         flex:1,
         width:'90%',
     },
+    item:{
+      borderColor:'#FFF',
+      borderBottomWidth:1,  
+      padding:5,
+     },
     title:{
         fontSize:24,
         fontWeight:'bold',
@@ -56,8 +94,6 @@ const styles = StyleSheet.create({
         fontSize:20,
         fontWeight:'bold',
         color:'#FFF',
-        marginTop:'2%',
-        marginBottom:'2%'  
     },
     textCompound:{
         fontSize:14,
@@ -94,6 +130,18 @@ const styles = StyleSheet.create({
     },
     flat:{
         marginTop:'5%'
-    }
+    },
+    observation:{
+      color:'#FFF',
+      marginBottom:'5%'
+  },
+  input:{
+    color:'#F3F3FF',
+    borderBottomWidth:1,
+    height:40,
+    marginBottom:12,
+    fontSize:16,
+    borderBottomColor:'#DADADA'
+},
 
 })
