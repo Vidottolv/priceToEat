@@ -20,14 +20,21 @@ function ProdutoItem({ produto }) {
     //       type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
     //     });
     //   };
+
+    let unidade = '';
+    if (produto.UnidadeMedida == '1') { unidade = 'kg'; }
+    else if (produto.UnidadeMedida == '2') { unidade = 'grama'; }
+    else if (produto.UnidadeMedida == '3') { unidade = 'litro'; }
+    else if (produto.UnidadeMedida == '4') { unidade = 'ml'; }
+    else { unidade = 'unidade'; }
     return (
       <TouchableOpacity 
         style={styles.buttonProduto}
         onLongPress={handleModalAdicionar}>
             <View style={styles.viewProduto}>
               <Text style={[styles.subtitle, styles.underline]}>{produto.Nome}</Text>
-              <Text style={styles.textCompound}>Preço: R${produto.PrecoProd} </Text>
-              <Text style={styles.textCompound}>Unidade: {produto.UnidadeMedida}</Text>
+              <Text style={styles.textCompound}>R${produto.PrecoProd} por {unidade} </Text>
+              <Text style={styles.textCompound}>ID: {produto.IDProduto}</Text>
             </View>
             <Modal 
                 visible={adicionar}
@@ -38,6 +45,7 @@ function ProdutoItem({ produto }) {
       </TouchableOpacity>
     );
   }
+
 export function CadastroBase(){
     const [produtos, setProdutos] = useState([]);
     const navigation = useNavigation();
@@ -112,7 +120,6 @@ const styles = StyleSheet.create({
         fontSize:14,
         fontWeight:'bold',
         color:'#FFF',
-        marginBottom:'1%'  
     },
     backButton:{
         marginRight:'5%',

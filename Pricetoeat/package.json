@@ -18,14 +18,15 @@
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.7.1",
     "react": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-animatable": "^1.4.0",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-ionicons": "^4.6.5",
     "react-native-numeric-input": "^1.9.1",
     "react-native-paper": "^4.12.6",
-    "react-native-snackbar": "^2.6.2"
+    "react-native-snackbar": "^2.6.2",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

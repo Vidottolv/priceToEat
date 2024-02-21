@@ -21,7 +21,7 @@ export default function CadastroReceita(){
     const navigation = useNavigation();
     const flashMessageSucesso = () => {
         showMessage({
-            backgroundColor:'#E06F72',
+            backgroundColor:'#0bbd29',
             message: 'Sucesso no cadastro!',
             type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
         });

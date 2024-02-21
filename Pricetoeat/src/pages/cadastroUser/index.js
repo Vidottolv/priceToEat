@@ -4,8 +4,8 @@ import * as animatable from 'react-native-animatable';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { Ionicons } from "@expo/vector-icons";
-import handleCreateAccount from "../../controller";
-
+import { handleCreateAccount } from "../../controller";
+import validator from "validator";
 
 export default function CadastroUsuario(){
     const navigation = useNavigation();
@@ -13,6 +13,15 @@ export default function CadastroUsuario(){
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [escondeSenha, setEscondeSenha] = useState(true);
+    const emailRegex = /^[\w!#$%&'*+/=?^`{|}~-]+(?:\.[\w!#$%&'*+/=?^`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6}$/;
+    const validateEmail = (email) => {
+        return validator.isEmail(email) && emailRegex.test(email);
+    };
+    const validatePassword = (password) => {
+        return passwordRegex.test(password);
+    };
+        
 
     return( 
         <View style={styles.container}>
@@ -30,21 +39,23 @@ export default function CadastroUsuario(){
                         onChangeText={(value) => setNome(value)}
                         style={styles.input}/>
                 <Text style={styles.title}>E-Mail</Text>
-                    <TextInput
+                <TextInput
                         placeholder="Digite seu E-Mail"
                         placeholderTextColor={'#F3F3FF'}
                         value={email}
                         onChangeText={(value) => setEmail(value)}
-                        style={styles.input}/>
+                        style={styles.input}
+                        errorMessage={!validateEmail(email) ? 'Email inválido' : null}/>
                 <Text style={styles.title}>Senha</Text>
                 <View style={styles.senhaArea}>
-                    <TextInput
+                <TextInput
                         placeholder="Digite sua Senha"
                         placeholderTextColor={'#F3F3FF'}
                         value={senha}
                         onChangeText={(value) => setSenha(value)}
                         style={styles.inputSenha}
-                        secureTextEntry={escondeSenha}/>
+                        secureTextEntry={escondeSenha}
+                        errorMessage={!validatePassword(senha) ? 'Senha inválida. Use 1 letra maiúscula, 1 número e 6 caracteres.' : null}/>
                         <TouchableOpacity 
                             style={styles.icon}
                             onPress={ () => setEscondeSenha(!escondeSenha)}>
