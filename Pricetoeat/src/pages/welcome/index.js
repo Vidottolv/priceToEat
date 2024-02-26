@@ -1,80 +1,62 @@
-import React from "react";
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import * as animatable from 'react-native-animatable'
+import React, { useEffect } from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from 'expo-linear-gradient';
+import LottieView from 'lottie-react-native';
+import * as Font from 'expo-font';
 
-export default function Welcome(){
+
+const Welcome = () => {
     const navigation = useNavigation();
-
-    return(
-        <View style={styles.container}>
-
-            <View style={styles.containerLogo}>
-                
-                <animatable.Image 
-                    animation={'flipInY'}
-                    source={require("../../assets/logo.png")} 
-                    style={{
-                        width:'100%',
-                        resizeMode:'contain'}}/> 
-            </View>
-            <animatable.View delay={600} animation='fadeInUp' style={styles.containerForm}>
-            <Text style={styles.title}>Te ajudando a ter lucro em suas receitas sempre!</Text>
-            <Text style={styles.text}>Faça login para continuar</Text>
-            <TouchableOpacity 
-            style={styles.button}
-            onPress={() => navigation.navigate('signin')}
-            >
-                <Text style={styles.buttonText}>Acessar</Text>
-            </TouchableOpacity>
-            </animatable.View>
-        </View>
-)}
+  
+    useEffect(() => {
+      const splashScreenTime = 3.5; 
+      setTimeout(() => {
+        navigation.replace('signin'); 
+      }, splashScreenTime * 1000);
+    }, []);
+  
+    return (
+      <View style={styles.container}>
+        <LinearGradient
+          style={styles.gradient}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          locations={[0.7, 0.8]}
+          colors={['#c8e29d', '#fff']}>
+          <Text style={[styles.title, styles.underline]}> PriceT'eat </Text>
+          <LottieView
+            source={require('../../assets/Animation - start app.json')}
+            autoPlay={true}
+            loop={false}
+            style={styles.lottieView}
+          />
+        </LinearGradient>
+      </View>
+    );
+  };
+  
+  export default Welcome;
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'#E7A17A',
+        flex: 1,
+        },
+    gradient: {
+        height: '100%',
+        width: '100%',
+      },
+      lottieView: {
         flex:1
-    },
-    containerLogo:{
-        flex:2,
-        alignItems:'center',
-        justifyContent:'center',
-        backgroundColor:'#E7A17A',
-    },
-    containerForm:{
-        flex:1,
-        backgroundColor:'#E06F72',
-        borderTopLeftRadius:25,
-        borderTopRightRadius:25,
-        paddingStart:'5%',
-        paddingEnd:'5%'
-    },
+      },
     title:{
-        fontSize:24,
+        fontSize:50,
         fontWeight:'bold',
-        marginTop:28,
-        marginBottom:12,
-        color:'#F3F3FF'
+        marginTop:'30%',
+        color:'#000',
+        alignSelf:'center'
     },
-    text:{
-        color:'#DADADA',
-        fontSize:16
-    },
-    button:{
-        position:'absolute',
-        backgroundColor:'#E19063',
-        borderRadius:50,
-        paddingVertical:8,
-        width:'60%',
-        alignSelf:'center',
-        bottom:'15%',
-        alignItems:'center',
-        justifyContent:'center'
-    },
-    buttonText:{
-        fontSize:16,
-        color:'#F3F3FF',
-        fontWeight:'bold'
+    underline: {
+        textDecorationLine: 'underline'
     }
 })
