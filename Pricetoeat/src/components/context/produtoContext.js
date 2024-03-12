@@ -8,7 +8,7 @@ export const GlobalProvider = ({ children }) => {
   const addToGlobalArray = (item) => {
     setGlobalArray((prevArray) => {
       const newArray = [...prevArray, item];
-      console.log(newArray);
+      // console.log(newArray);
       return newArray;
     });
   };  
@@ -17,7 +17,7 @@ export const GlobalProvider = ({ children }) => {
     const newArray = [...globalArray];
     newArray.splice(index, 1);
     setGlobalArray(newArray);
-    console.log(newArray)
+    // console.log(newArray)
   };
 
   return (

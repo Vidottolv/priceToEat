@@ -22,7 +22,6 @@ const handleCreateAccount = (email, senha) => {
             const data = {
                 id:uid,
                 email,
-                nome,
             };
             const usersRef = collection(firestore, 'usuarios');
             const userDoc = doc(usersRef, uid);

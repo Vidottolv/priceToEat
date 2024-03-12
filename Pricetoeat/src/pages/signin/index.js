@@ -1,22 +1,22 @@
-import { signInWithEmailAndPassword, getAuth} from 'firebase/auth'
+import { signInWithEmailAndPassword, getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from "react";
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Alert} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, KeyboardAvoidingView, Image, PermissionsAndroid, launchImageLibrary, useEffect} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { Snackbar } from 'react-native-paper';
 import * as animatable from 'react-native-animatable';
 import { Ionicons } from "@expo/vector-icons";
 import app from "../../firebaseConfig";
-// import useSignIn from './useSignIn'
 import { ModalTrocaSenha } from '../../components/modais/modalTrocaSenha';
 import { LinearGradient } from 'expo-linear-gradient';
-// import { handleCreateAccount } from "../../controller";
-import validator from "validator";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useFonts } from 'expo-font';
+import {getFirestore, collection, doc, setDoc} from 'firebase/firestore';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Signin(){
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fotoURI, setFotoURI] = useState('');
     const [nomeCadastro, setNomeCadastro] = useState('');
     const [emailCadastro, setEmailCadastro] = useState('');
     const [senhaCadastro, setSenhaCadastro] = useState('');
@@ -24,25 +24,13 @@ export default function Signin(){
     const [SenhaVisible, setSenhaVisible] = useState(false);
     const [loginSelected, setLoginSelected] = useState(true);
     const [cadastroSelected, setCadastroSelected] = useState(false);
-    // const emailRegex = /^[\w!#$%&'*+/=?^`{|}~-]+(?:\.[\w!#$%&'*+/=?^`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/;
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6}$/;
+    const [SnackbarSucesso, setSnackbarSucesso] = useState(false);
+    const [SnackbarErro, setSnackbarErro] = useState(false);
     const handleOpenModalSenha = () => {setSenhaVisible(true);}
     const auth = getAuth(app)
-    // const validateEmail = (email) => {
-    //     return validator.isEmail(email) && emailRegex.test(email);
-    // };
-    // const validatePassword = (password) => {
-    //     return passwordRegex.test(password);
-    // };
-    const handleLoginSelect = () => {
-      setLoginSelected(true);
-      setCadastroSelected(false);
-    };
-    const handleCadastroSelect = () => {
-      setLoginSelected(false);
-      setCadastroSelected(true);
-    }
-
+    const firestore = getFirestore(app)
+    const handleLoginSelect = () => { setLoginSelected(true); setCadastroSelected(false); }
+    const handleCadastroSelect = () => { setLoginSelected(false); setCadastroSelected(true); }
     const handleSignIn = () => {
         signInWithEmailAndPassword(auth,email,password)
         .then((userCredential) => {
@@ -52,8 +40,16 @@ export default function Signin(){
         }).catch(error => {
             //console.log(error)
         })}
+    const [loaded] = useFonts({
+        'Quicksand-Regular': require('../../assets/fonts/Quicksand-Regular.ttf'),
+        'Quicksand-Bold': require('../../assets/fonts/Quicksand-Bold.ttf'),
+        'Quicksand-Medium': require('../../assets/fonts/Quicksand-Medium.ttf'),
+    });
+    if (!loaded) {
+        return null;
+    }
 
-    const handleCreateAccount = (email, senha) => {
+    const handleCreateAccount = (email, senha, nome) => {
         createUserWithEmailAndPassword(
             auth,email,senha)
             .then((response) => {
@@ -61,25 +57,52 @@ export default function Signin(){
                 const data = {
                     id:uid,
                     email,
-                    nome,
+                    nome
                 };
                 const usersRef = collection(firestore, 'usuarios');
                 const userDoc = doc(usersRef, uid);
                 setDoc(userDoc, data);
-            setTimeout( () => navigation.navigate('home'), duration = 2000)
+                setSnackbarSucesso(true);
+                setTimeout(() => setSnackbarSucesso(false), 1999)
+                setTimeout( () => navigation.navigate('home'), duration = 2000)
         }).catch(error => {
             console.log(error)
+            setSnackbarErro(true);
+            setTimeout(() => setSnackbarErro(false), 2000)
         })
     }
 
+        // useEffect(() => {
+        //     (async () => {
+        //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+        //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        //         console.log('Permissão de acesso à galeria concedida');
+        //       } else {
+        //         console.log('Permissão de acesso à galeria negada');
+        //       }
+        //     })();
+        //   }, []);
+        //   const handleSelectFoto = () => {
+        //     launchImageLibrary({ mediaType: 'photo' }, (response) => {
+        //       if (response.didCancel) {
+        //         console.log('Seleção de foto cancelada');
+        //       } else if (response.error) {
+        //         console.log('Erro ao selecionar foto:', response.error);
+        //       } else {
+        //         setFotoURI(response.uri);
+        //       }
+        //     });
+        //   };
+          
+          
     return(
         <View style={styles.container}>
             <LinearGradient
                 style={styles.gradient}
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 1 }}
-                locations={[0.7, 0.8]}
-                colors={['#c8e29d', '#fff']}>
+                locations={[0.6, 0.8]}
+                colors={['#99BC85', '#fff']}>
             <animatable.View animation={'fadeInUp'} style={styles.containerForm}>
             <Text style={[styles.title, styles.underline]}> PriceT'eat </Text>
             <View style={styles.rowLoginCadastro}>
@@ -99,7 +122,7 @@ export default function Signin(){
                 <Text style={styles.subtitle}>Endereço de E-mail</Text>
                     <TextInput
                         placeholder="Seu E-Mail"
-                        placeholderTextColor={'#939e96'}
+                        placeholderTextColor={'#515151'}
                         value={email}
                         onChangeText={(value) => setEmail(value)}
                         style={styles.textinput}/>
@@ -107,7 +130,7 @@ export default function Signin(){
                 <View style={styles.senhaArea}>
                     <TextInput
                         placeholder="Sua Senha"
-                        placeholderTextColor={'#939e96'}
+                        placeholderTextColor={'#515151'}
                         value={password}
                         onChangeText={(value) => setPassword(value)}
                         style={styles.inputSenha}
@@ -140,9 +163,13 @@ export default function Signin(){
                 </View>)}
                 {cadastroSelected && (
                     <View>
-                        <Text style={styles.subtitle}>Nome</Text>
+                        {/* <TouchableOpacity onPress={handleSelectFoto} style={styles.botaoSelecionarFoto}>
+                            <Text style={styles.textoBotaoSelecionarFoto}>Selecionar Foto</Text>
+                        </TouchableOpacity>
+                        {fotoURI && <Image source={{ uri: fotoURI }} style={styles.fotoSelecionada} />} */}
+                        <Text style={styles.titulo}>Nome</Text>
                         <TextInput
-                            placeholder="Seu nome completo"
+                            placeholder="Seu Nome"
                             placeholderTextColor={'#939e96'}
                             value={nomeCadastro}
                             onChangeText={(value) => setNomeCadastro(value)}
@@ -151,7 +178,7 @@ export default function Signin(){
                         <TextInput
                             placeholder="Seu E-Mail"
                             placeholderTextColor={'#939e96'}
-                            value={emailCadastro}aces
+                            value={emailCadastro}
                             onChangeText={(value) => setEmailCadastro(value)}
                             style={styles.textinput}/>
                         <Text style={styles.subtitle}>Senha</Text>
@@ -173,7 +200,7 @@ export default function Signin(){
                         </TouchableOpacity> */}
                         <TouchableOpacity 
                             style={styles.buttonAcessarCadastrar} 
-                            onPress={handleCreateAccount(email,password)}>
+                            onPress={() => handleCreateAccount(emailCadastro,senhaCadastro, nomeCadastro)}>
                             <Text style={styles.buttonTextAcessarCadastrar}>Cadastrar</Text>
                         </TouchableOpacity>
                  </View>
@@ -185,17 +212,17 @@ export default function Signin(){
                     <ModalTrocaSenha handleClose={() => setSenhaVisible(false)} email={email}/>
             </Modal>
             </animatable.View>
-            </LinearGradient>
-            <Snackbar 
-                    duration={2000}
-                    style={{height:60, backgroundColor:'#5ea955'}}>
+            <Snackbar
+                visible={SnackbarSucesso}
+                style={{ height: 60, backgroundColor: '#5ea955' }}>
                     Usuário foi cadastrado! Entrando no App.
             </Snackbar>
-            <Snackbar 
-                    duration={2000}
-                    style={{height:60, backgroundColor:'#e50e0e'}}>
+            <Snackbar
+                visible={SnackbarErro}
+                style={{ height: 60, backgroundColor: '#e50e0e' }}>
                     Falha ao cadastrar usuário! Tente novamente.
             </Snackbar>
+            </LinearGradient>
     </View>
 )}
 
@@ -213,7 +240,7 @@ const styles = StyleSheet.create({
     },
     message:{
         fontSize:28,
-        fontWeight:'bold',
+        fontFamily:'Quicksand-Regular',
         color:'#F3F3FF'
     },
     containerForm:{
@@ -224,7 +251,7 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize:50,
-        fontWeight:'bold',
+        fontFamily:'Quicksand-Bold',
         marginTop:'30%',
         color:'#000',
         alignSelf:'center',
@@ -234,7 +261,7 @@ const styles = StyleSheet.create({
         color:'#000',
         margin:5,
         fontSize:15,
-        fontWeight:'bold'
+        fontFamily:'Quicksand-Regular'
     },
     rowLoginCadastro:{
         display:'flex',
@@ -249,19 +276,19 @@ const styles = StyleSheet.create({
         borderWidth:1,
       },
     botoesLoginCadastro:{
-        backgroundColor:'#9EC976',
+        backgroundColor:'#BFD8AF',
         borderRadius:8, 
         flex:1
     },
     textobotaoLoginCadastro:{
         marginTop:'5%',
-        fontWeight:'bold',
+        fontFamily:'Quicksand-Regular',
         alignSelf:'center',
         marginBottom:'3%',
         marginTop:'3%'
     },
     textinput:{
-        color:'#939e96',
+        color:'#515151',
         borderRadius:8,
         backgroundColor:'#FFF',
         height:60,
@@ -282,7 +309,7 @@ const styles = StyleSheet.create({
     buttonTextAcessarCadastrar:{
         color:'#FFF',
         fontSize:16,
-        fontWeight:'bold'
+        fontFamily:'Quicksand-Regular',
     },
     buttonRegister:{
         marginTop:14,
@@ -294,7 +321,7 @@ const styles = StyleSheet.create({
     buttonForget:{
         color:'#F3F3FF',
         fontSize:16,
-        fontWeight:'bold',
+        fontFamily:'Quicksand-Regular',
         marginBottom:15,
         alignItems:'flex-end'
     },
@@ -310,7 +337,7 @@ const styles = StyleSheet.create({
         justifyContent:'space-between'        
     },
     inputSenha:{
-        color:'#939e96',
+        color:'#515151',
         backgroundColor:'#FFF',
         borderRadius:8,
         height:60,

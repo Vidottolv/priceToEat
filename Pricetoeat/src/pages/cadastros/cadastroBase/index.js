@@ -8,12 +8,23 @@ import { collection, getDocs} from "firebase/firestore";
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import { ModalAdicionar } from '../../../components/modais/modalAdicionar';
+import { useFonts } from 'expo-font';
 
 function ProdutoItem({ produto }) {
     const navigation = useNavigation();
     const [adicionar, setAdicionar] = useState(false);
+    const [openModalBase, setOpenModalBase] = useState(false);
     const handleModalAdicionar = () => {setAdicionar(true);}
-
+    const handleOpenModalAdicionar = () => {setOpenModalBase(true);}
+    const [loaded] = useFonts({
+        'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
+        'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
+        'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
+      });
+      if (!loaded) {
+        return null;
+      }
+    
     // const showFlashMessage = () => {
     //     showMessage({
     //       message: 'Item Excluído.',
@@ -80,80 +91,100 @@ export function CadastroBase(){
                             <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
                                     <Ionicons
                                         size={30} 
-                                        color={'#FFF'}
-                                        name='home'/>
+                                        color={'#99BC85'}
+                                        name='home-outline'/>
                             </TouchableOpacity>
                     </View>
-                    <Text style={styles.observation}>⚠️OBS: Segure apertado o ingrediente que você quer adicionar na base. (Clique no botão ✔️ para ver os produtos selecionados)</Text>
+                    <Text style={styles.observation}>⚠️OBS: clique no ingrediente que você quer adicionar na base. (Clique no ✔️ no canto direito pra poder ver os produtos selecionados).</Text>
             <FlatList style={styles.flat}
                 data={produtos}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <ProdutoItem produto={item} />}/>
+                renderItem={({ item }) => <ProdutoItem produto={item}/>}/>
                 </animatable.View>
         </SafeAreaView>
     )
 }
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'#E7A17A',
-        alignItems:'center',
-        justifyContent:'center',
-        flex:1
+        backgroundColor:'#FFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        width:'100%'
     },
     content:{
         flex:1,
-        width:'90%',
+        width:'100%',
     },
-    title:{
-        fontSize:24,
-        fontWeight:'bold',
-        color:'#FFF',
-        marginLeft:'1%',
+    title: {
+        fontSize: 28,
+        fontFamily: 'Quicksand-Bold',
+        color: '#99BC85',
+        marginLeft: '3%',
+        marginTop: '7%',
+        textShadowRadius: 4,
+        textShadowColor: '#BFD8AF',
+        textShadowOffset: {
+            width: 4,
+            height: 2
+        }
     },
     subtitle:{
         fontSize:20,
-        fontWeight:'bold',
-        color:'#FFF',
+        fontFamily: 'Quicksand-Bold',
+        color:'#000',
         marginTop:'2%',
     },
     textCompound:{
         fontSize:14,
-        fontWeight:'bold',
-        color:'#FFF',
+        fontFamily: 'Quicksand-Regular',
+        color:'#000',
     },
-    backButton:{
-        marginRight:'5%',
+    backButton: {
+        marginRight: '5%',
+        marginTop: '8%'
     },
-    headerModal:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        marginTop:'10%'
+    headerModal: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        // marginTop: '8%',
+        borderBottomWidth: 3,
+        borderColor: '#99BC85',
+        backgroundColor: '#D4E7C5',
+        height: '12%'
+    
     },
     underline: {
         textDecorationLine: 'underline'
     },
     textButton:{
-        color:'#FFF',
+        color:'#000',
         fontWeight:'bold'
     },
     buttonProduto:{
-        borderWidth:1,
+        borderWidth:3,
+        borderColor:'#99BC85',
         borderRadius:30,
         marginBottom:'2%',
-        borderColor:'#FFF',
-        width:'95%'
+        width:'95%',
+        alignSelf:'center',
+        backgroundColor:'#D4E7C5'
     },
     viewProduto:{
         marginLeft:'8%',
         marginBottom:'2%'
     },
     flat:{
-        marginTop:'5%'
+        marginTop:'5%',
+        padding:10
     },
     observation:{
-        color:'#FFF',
-        marginBottom:'5%'
+        color:'#000',
+        fontFamily: 'Quicksand-Regular',
+        padding:5,
+        paddingLeft:10
+        // marginBottom:'5%'
     }
 
 })

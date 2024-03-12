@@ -5,10 +5,10 @@ import FlashMessage from 'react-native-flash-message';
 
 export default function Routes(){
     return(
-        <NavigationContainer>
-            <StackRoutes/>
-            <FlashMessage  
-                position={'bottom'}/>
-        </NavigationContainer>
+            <NavigationContainer>
+                <StackRoutes/>
+                <FlashMessage  
+                    position={'bottom'}/>
+            </NavigationContainer>
     )
 }

@@ -6,6 +6,7 @@
   import { useNavigation } from '@react-navigation/native';
   import { collection, addDoc, getDocs } from "firebase/firestore";
   import { useGlobalContext } from '../../../../components/context/produtoContext';
+  import { useFonts } from 'expo-font';
 
   const ProdutosSelecionados = () => {
     const { globalArray, removeItemFromGlobalArray } = useGlobalContext();
@@ -17,6 +18,15 @@
       newQuants[index] = text;
       setQuants(newQuants);
     };
+    const [loaded] = useFonts({
+      'Quicksand-Regular': require('../../../../assets/fonts/Quicksand-Regular.ttf'),
+      'Quicksand-Bold': require('../../../../assets/fonts/Quicksand-Bold.ttf'),
+      'Quicksand-Medium': require('../../../../assets/fonts/Quicksand-Medium.ttf'),
+    });
+    if (!loaded) {
+      return null;
+    }
+  
 
     const renderItem = ({ item, index }) => {
       let unidade = '';
@@ -36,7 +46,7 @@
           </TouchableOpacity>
           <TextInput
             placeholder="Digite a Qtd usada"
-            placeholderTextColor={'#F3F3FF'}
+            placeholderTextColor={'#000'}
             value={quants[index]}
             onChangeText={(text) => onChangeText(index, text)}
             style={styles.input} />
@@ -61,7 +71,8 @@
                   produto: globalArray[i].Nome,
                   preco: globalArray[i].PrecoProd,
                   quantidade: quants[i],
-                  custo: custo
+                  custo: custo,
+                  unidade: unidade
                 });
               }
               const docRef = await addDoc(collection(firestore, 'bases'), {
@@ -71,8 +82,10 @@
                 custoBase: custoBase,
                 listaCustos: listaCustos
               });
-              console.log(docRef);
+              // console.log(docRef);
               setNomeBase('');
+              removeItemFromGlobalArray('');
+              navigation.navigate('ProdutosSelecionados')
             }
           });
         } catch (error) {
@@ -88,13 +101,14 @@
         <View style={styles.content}>
           <View style={styles.headerModal}>
             <Text style={[styles.title, styles.underline]}>Produtos Selecionados</Text>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
+            {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
               <Ionicons
                 size={30}
                 color={'#FFF'}
                 name='home' />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
+          <View style={styles.body}>
           <Text style={styles.observation}>Segure apertado o nome do produto para excluir ele da base.</Text>
           <Text style={styles.subtitle}> Nome da base:</Text>
           <TextInput
@@ -111,66 +125,100 @@
             onPress={cadastraBase}>
             <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     );
   };
 
   export default ProdutosSelecionados;
+
   const styles = StyleSheet.create({
-    container: {
-      backgroundColor: '#E7A17A',
+    container:{
+      backgroundColor:'#FFF',
       alignItems: 'center',
       justifyContent: 'center',
-      flex: 1
+      flex: 1,
+      width:'100%',
     },
     content: {
       flex: 1,
-      width: '90%',
+      width: '100%',
+    },
+    body:{
+      width:'90%',
+      alignSelf:'center'      
     },
     item: {
-      borderColor: '#FFF',
+      borderColor: '#000',
       borderBottomWidth: 1,
       padding: 5,
     },
     title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#FFF',
-      marginLeft: '1%',
+      fontSize: 28,
+      fontFamily: 'Quicksand-Bold',
+      color: '#99BC85',
+      marginLeft: '3%',
+      marginTop: '7%',
+      textShadowRadius: 4,
+      textShadowColor: '#BFD8AF',
+      textShadowOffset: {
+          width: 4,
+          height: 2
+      }
     },
-    subtitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#FFF',
+    subtitle:{
+      fontSize:20,
+      fontFamily: 'Quicksand-Bold',
+      color:'#000',
+      marginTop:'2%',
+      color:'#99BC85',
+      textShadowRadius: 4,
+      textShadowColor: '#BFD8AF',
+      textShadowOffset: {
+          width: 4,
+          height: 2
+      }
     },
     subtitleFlat: {
       fontSize: 17,
-      fontWeight: 'bold',
-      color: '#FFF',
-    },
-    textCompound: {
-      fontSize: 14,
-      fontWeight: 'bold',
-      color: '#FFF',
-      marginBottom: '1%'
+      fontFamily: 'Quicksand-Regular',
+      color: '#000',
+      textShadowRadius: 6,
+      textShadowColor: '#000',
+      textShadowOffset: {
+          width: 1,
+          height: 1
+      }
+      },
+    textCompound:{
+      fontSize:14,
+      fontFamily: 'Quicksand-Regular',
+      color:'#000',
     },
     button: {
-      backgroundColor:"#E19063",
-      borderRadius: 20,
-      paddingVertical: 8,
-      width: '100%',
-      marginTop: 14,
-      marginBottom:5,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor:'#FFF'
+        justifyContent: 'center',
+        alignSelf: 'center',
+        height: 45,
+        width: '90%',
+        marginTop: 30,
+        marginBottom: 15,
+        padding: 4,
+        borderRadius: 40,
+        borderWidth: 3,
+        borderColor: '#99BC85',
+        backgroundColor: '#D4E7C5'
     },
     buttonText: {
-      color: '#F3F3FF',
+      textShadowRadius: 7,
+      textShadowColor: '#000',
+      textShadowOffset: {
+        width: 1,
+        height: 1
+      },
+      fontFamily: 'Quicksand-Bold',
+      textAlign:'center',
       fontSize: 16,
-      fontWeight: 'bold'
     },
     backButton: {
       marginRight: '5%',
@@ -179,36 +227,48 @@
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
-      marginTop: '10%'
-    },
+      // marginTop: '8%',
+      borderBottomWidth: 3,
+      borderColor: '#99BC85',
+      backgroundColor: '#D4E7C5',
+      height: '12%'
+  
+  },
     underline: {
       textDecorationLine: 'underline'
     },
-    buttonProduto: {
-      borderWidth: 1,
-      borderRadius: 30,
-      marginBottom: '2%',
-      borderColor: '#FFF',
-      width: '95%'
-    },
+    buttonProduto:{
+      borderWidth:1,
+      borderRadius:30,
+      marginBottom:'2%',
+      borderColor:'#000',
+      // width:'95%'
+  },
     viewProduto: {
       marginLeft: '8%',
       marginBottom: '2%'
     },
     flat: {
-      marginTop: '5%'
+      marginTop: '5%',
+      padding:10
     },
     observation: {
-      color: '#FFF',
-      marginBottom: '5%'
+      color: '#000',
+      marginBottom: '5%',
+      marginLeft:'5%',
+      fontFamily: 'Quicksand-Regular',
     },
     input: {
-      color: '#F3F3FF',
-      borderBottomWidth: 1,
+      color: '#000',
+      backgroundColor: '#E1F0DA',
+      borderWidth: 2,
+      borderRadius: 20,
+      padding: 10,
+      paddingLeft: 20,
       height: 40,
-      marginBottom: 12,
-      fontSize: 16,
-      borderBottomColor: '#DADADA'
+      fontSize: 14,
+      borderColor: '#99BC85',
+      marginTop:'1%'
     },
     margin: {
       marginBottom:'8%'

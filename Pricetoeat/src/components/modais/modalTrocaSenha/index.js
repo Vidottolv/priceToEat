@@ -15,7 +15,7 @@ export function ModalTrocaSenha ({handleClose, email}){
     if (!docSnap != null){msg = 'Digite um email válido.'} 
     if (docSnap != null){
         recuperaSenha();
-        console.log(docSnap);
+        // console.log(docSnap);
         msg = '\tE-mail enviado.\n Verifique sua caixa de E-mail.'
     }
 

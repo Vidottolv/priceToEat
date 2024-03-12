@@ -1,93 +1,155 @@
-import { React, useState } from 'react'
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity}from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import FAB from '../../../components/Button/FAB.js';
+import { ConsultaProduto } from '../../consultas/produto/index.js'
+import { ConsultaBase } from '../../consultas/bases/index.js';
+import { useFonts } from 'expo-font';
+import LottieView from 'lottie-react-native';
 
-
-export function Cadastros(){
+export function Cadastros() {
   const navigation = useNavigation();
+  const [isPressedReceita, setIsPressedReceita] = useState(true);
+  const [isPressedBase, setIsPressedBase] = useState(false);
+  const [isPressedProduto, setIsPressedProduto] = useState(false);
+  const [loaded] = useFonts({
+    'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
+    'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
+    'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
+  });
+  if (!loaded) {
+    return null;
+  }
+  const handleReceitaSelect = () => {
+    setIsPressedReceita(true);
+    setIsPressedBase(false);
+    setIsPressedProduto(false);
+  };
+  const handleBaseSelect = () => {
+    setIsPressedReceita(false);
+    setIsPressedBase(true);
+    setIsPressedProduto(false);
+  };
+  const handleProdutoSelect = () => {
+    setIsPressedReceita(false);
+    setIsPressedBase(false);
+    setIsPressedProduto(true);
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerRecipes}>
-        <Text style={[styles.title, styles.underline]}>Cadastrar Produtos</Text>
-          <Text style={styles.textCompound}>
-            Aqui, você cadastrará os produtos a serem usados nas suas receitas.
-          </Text>
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => navigation.navigate('cadastroProduto')}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
+    <View style={styles.containerMain}>
+      <Text style={[styles.title, styles.underline]}>PriceT'eat</Text>
+        <View style={styles.containerBotoes}>
+        <TouchableOpacity style={[styles.botoesCadastro, isPressedReceita 
+          ? { backgroundColor:'#99BC85' } 
+          : { borderWidth:2, backgroundColor:'#BFD8AF', borderColor:'#99BC85' }]} 
+          onPress={handleReceitaSelect}>
+              <Text style={[styles.textoBotoesCadastro, isPressedReceita 
+                ? { fontFamily:'Quicksand-Bold', fontSize: 19, } 
+                : { fontFamily:'Quicksand-Medium' }]}>
+                Receitas
+              </Text>
           </TouchableOpacity>
-      </View>
-      <View style={styles.containerRecipes}>
-        <Text style={[styles.title, styles.underline]}>Cadastrar Bases</Text>
-          <Text style={styles.textCompound}>
-            Cadastre bases de receitas, como massas de bolo, molhos elaborados, etc.
-          </Text>
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={() => navigation.navigate('cadastroBase')}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
+          <TouchableOpacity style={[styles.botoesCadastro, isPressedBase 
+            ? { backgroundColor:'#99BC85' } 
+            : { borderWidth:2, backgroundColor:'#BFD8AF', borderColor:'#99BC85' }]}
+            onPress={handleBaseSelect}>
+              <Text style={[styles.textoBotoesCadastro, isPressedBase 
+                ? { fontFamily:'Quicksand-Bold', fontSize: 19, } 
+                : { fontFamily:'Quicksand-Medium' }]}>
+                Bases
+              </Text>
           </TouchableOpacity>
-      </View>
-      <View style={styles.containerRecipes}>
-        <Text style={[styles.title, styles.underline]}>Cadastrar Receitas</Text>
-          <Text style={styles.textCompound}>
-            Nesta aba, você poderá cadastrar todas as receitas usadas no seu restaurante.
-          </Text>
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={() => navigation.navigate('cadastroReceita')}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
+          <TouchableOpacity style={[ styles.botoesCadastro, isPressedProduto 
+            ? { backgroundColor:'#99BC85' } 
+            : { borderWidth:2, backgroundColor:'#BFD8AF', borderColor:'#99BC85' }]} 
+            onPress={handleProdutoSelect}>
+              <Text style={[ styles.textoBotoesCadastro, isPressedProduto 
+                ? { fontFamily:'Quicksand-Bold', fontSize: 19 } 
+                : { fontFamily:'Quicksand-Medium' }]}>
+                Produtos
+              </Text>
           </TouchableOpacity>
+          </View>
+        <View style={ styles.containerDeProdutos }>
+          { isPressedProduto && <ConsultaProduto /> }
+          { isPressedBase && <ConsultaBase /> }
       </View>
-    </View>
-  )
+      <FAB />
+      </View>
+  );
 }
+
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor:"#E7A17A",
-    justifyContent:'center',
-    alignItems:'center',
-  },
-  containerRecipes:{
-    height:'30%',
-    width:'85%',
-    borderWidth:1,
-    borderRadius:16,
-    margin:4,
-    borderColor:'#FFF',
-    padding:11
-  },
-  title:{
-    fontSize:24,
-    color:'#FFF',
-    marginLeft:'4%',
-    marginTop:'3%'
-  },
-  textCompound:{
-    fontSize:18,
-    color:'#FFF',
-    marginLeft:'8%',
-    marginTop:'2%',
-    marginRight:'2%'
-  },
-  button:{
-    height:50,
+  containerMain: {
+    padding: 25,
+    display:'flex',
+    flex: 1,
+    backgroundColor: "#FFF",
     alignItems: 'center',
-    padding:12,
-    borderRadius:40,
-    backgroundColor:"#E19063",
-    margin: '10%',
-    borderWidth: 1,
-    borderColor:'#FFF'
   },
-  buttonText:{
-    color:"#FFF",
-    fontSize:16,
+  containerBotoes: {
+    // borderBottomWidth:1,
+    // borderTopWidth:1,
+    // borderColor:'#C7C8CC',
+    // backgroundColor:'#FEFBF6',
+    height:'6%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:'center',
+    width: '100%', 
+    paddingHorizontal: 20,
+    marginTop:'3%',
+  },
+  botoesCadastro:{
+    width:'32%',
+    borderRadius:8,
+    height:30,
+    justifyContent:'center'
+  },
+  textoBotoesCadastro: {
+    // marginLeft: '7%',
+    // transform: [{ rotate: '-90deg' }],
+    fontSize: 16,
+    fontWeight: 'normal',
+    justifyContent:'center',
+    textAlign:'center',
+    fontFamily:'Quicksand-Regular'
+  },
+  containerDeProdutos: {
+    marginHorizontal: 'auto',
+  },
+  title: {
+    textAlign:'center',
+
+    fontSize: 55,
+    fontFamily: 'Quicksand-Bold',
+    color: '#000',
+    marginTop: '5%',
   },
   underline: {
-   textDecorationLine: 'underline'
+    textDecorationLine: 'underline'
+  },
+  textCompound: {
+    fontSize: 18,
+    color: '#000',
+    marginLeft: '8%',
+    marginTop: '2%',
+    marginRight: '2%'
+  },
+  button: {
+    height: 50,
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 40,
+    backgroundColor: "#FFF",
+    margin: '10%',
+    borderWidth: 1,
+    borderColor: '#000'
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 16,
   },
 })

@@ -46,7 +46,7 @@ export default function CadastroReceita(){
                         UnidadeMedida: current,
                         IDUsuario: uid,
                     });
-                    console.log(docRef);
+                    // console.log(docRef);
                     setNomeProduto('');
                 }
                 flashMessageSucesso();
