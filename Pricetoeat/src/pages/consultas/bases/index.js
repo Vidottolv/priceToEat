@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -9,8 +9,9 @@ import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
+import { ModalMostraBase } from '../../../components/modais/modalMostraBase';
 
-function BaseItem({ base }) {
+function BaseItem({ base, onPressItem }) {
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -43,33 +44,22 @@ function BaseItem({ base }) {
             flashMessageErro();
         }
     }
-
-    // let unidade = '';
-    // if (produto.UnidadeMedida == '1') { unidade = 'kilo'; }
-    // else if (produto.UnidadeMedida == '2') { unidade = 'grama'; }
-    // else if (produto.UnidadeMedida == '3') { unidade = 'litro'; }
-    // else if (produto.UnidadeMedida == '4') { unidade = 'ml'; }
-    // else { unidade = 'unid'; }
     return (
         <TouchableOpacity
-            style={styles.buttonProduto}
-            onLongPress={deletar}>
+            style={styles.buttonBase}
+            onPress={() => onPressItem(base)}>
             <View style={styles.viewProduto}>
-                {/* <View style={styles.image}>
-                    <Image source={require('../../assets/priceteatFundoRem.png')}/>
-                </View> */}
+                <View style={styles.image}>
+                    {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
+                </View>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{base.Nome}</Text>
                     <View style={styles.subContainerComponent}>
-                        {/* <View>
-                            <Text style={styles.textCompound}>R${produto.PrecoProd} por {unidade}</Text>
-                            <Text style={styles.textCompound}>ID: {produto.IDProduto}</Text>
-                        </View>
                         <View>
-                            <TouchableOpacity style={styles.favButton}>
-                                <Ionicons size={35} color={'#99BC85'} name='heart-sharp' />
-                            </TouchableOpacity>
-                        </View> */}
+                            <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
+                            <Text style={styles.textCompound}>{base.listaCustos[0].produto} - Custo: R${base.listaCustos[0].custo}</Text>
+                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -81,29 +71,41 @@ export function ConsultaBase() {
     const [bases, setBases] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-
+    const [baseId, setBaseId] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const handleOpenModal = (base) => {
+        setBaseId(base);
+        setOpenModal(true);
+    };
+    
     async function consultarBases() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const basesSnapshot = await getDocs(collection(firestore, 'bases'));
-                    const basesArray = [];
-                    basesSnapshot.forEach((doc) => {
-                        const base = {
-                            id: doc.id,
-                            ...doc.data(),
-                        };
-                        basesArray.push(base);
-                    });
-                    setBases(basesArray);
-                    setIsLoading(false);
-                } catch (error) {
-                    console.error('Erro ao consultar bases:', error);
-                }
-            }
-        })
+        try {
+            const user = await new Promise((resolve, reject) => {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        resolve(user);
+                    } else {
+                        reject(new Error("Usuário não autenticado"));
+                    }
+                });
+            });
+    
+            const basesSnapshot = await getDocs(collection(firestore, 'bases'));
+            const basesArray = [];
+            basesSnapshot.forEach((doc) => {
+                const base = {
+                    id: doc.id,
+                    ...doc.data(),
+                };
+                basesArray.push(base);
+            });
+            setBases(basesArray);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Erro ao consultar bases:', error);
+        }
     }
-    useEffect(() => {
+        useEffect(() => {
         consultarBases(),
             [];
     })
@@ -118,11 +120,19 @@ export function ConsultaBase() {
                             loop />
                     </View>
                     ) : (
-                    <animatable.View animation={'fadeInRight'}>
-                        <FlatList style={styles.flat}
+                        <animatable.View animation={'fadeInRight'}>
+                            <FlatList style={styles.flat}
                             data={bases}
                             keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => <BaseItem base={item} />} />
+                            renderItem={({ item }) => (
+                                <BaseItem
+                                base={item}
+                                onPressItem={handleOpenModal}
+                                />
+                            )}
+                            />
+                        {/* Use o componente ModalMostraBase com a letra maiúscula correta */}
+                        <ModalMostraBase modalVisible={openModal} base={baseId} handleClose={() => setOpenModal(false)} />
                     </animatable.View>
                     )
             }
@@ -135,7 +145,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         alignItems: 'center',
         justifyContent: 'flex-end',
+        width:'100%',
+        // borderWidth:1
         // marginRight:'15%',
+    },
+    content: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     subContainerComponent: {
         flexDirection: 'row',
@@ -143,7 +160,7 @@ const styles = StyleSheet.create({
         ////borderWidth:2
     },
     title: {
-        fontSize: 20,
+        fontSize: 24,
         fontFamily: 'Quicksand-Bold',
         color: '#000',
         marginLeft: '1%',
@@ -168,12 +185,21 @@ const styles = StyleSheet.create({
         marginLeft: '5%',
         textAlign: 'left'
     },
+    textVerMais: {
+        fontSize:12,
+        fontFamily: 'Quicksand-Bold',
+        color:'#000',
+        marginBottom:'1%',
+        marginTop:'1%',
+        marginLeft:'4%',
+        textAlign:'left'
+    },
     favButton: {
         alignSelf: 'center'
     },
     image: {
         backgroundColor: '#99BC85',
-        height: 80,
+        height: 120,
         width: '30%',
         borderRadius: 10,
         borderTopRightRadius: 70,
@@ -193,14 +219,17 @@ const styles = StyleSheet.create({
         color: '#000',
         fontFamily: 'Quicksand-Bold',
     },
-    buttonProduto: {
+    buttonBase: {
         flex: 1,
         borderWidth: 2,
         borderRadius: 10,
         marginBottom: '2%',
-        marginLeft: '5%',
-        marginRight: '5%',
+        // marginLeft: '5%',
+        // marginRight: '5%',
         borderColor: '#99BC85',
+        // height:140,
+        width:'100%',
+        backgroundColor:'#E1F0DA'
     },
     viewProduto: {
         //borderWidth:2,
@@ -211,7 +240,7 @@ const styles = StyleSheet.create({
         // marginTop:'2%'
     },
     flat: {
-        marginTop: '5%'
+        marginTop: '5%',
     },
     observation: {
         color: '#000',

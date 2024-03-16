@@ -5,7 +5,7 @@ import FAB from '../../../components/Button/FAB.js';
 import { ConsultaProduto } from '../../consultas/produto/index.js'
 import { ConsultaBase } from '../../consultas/bases/index.js';
 import { useFonts } from 'expo-font';
-import LottieView from 'lottie-react-native';
+// import LottieView from 'lottie-react-native';
 
 export function Cadastros() {
   const navigation = useNavigation();
@@ -75,7 +75,7 @@ export function Cadastros() {
           { isPressedProduto && <ConsultaProduto /> }
           { isPressedBase && <ConsultaBase /> }
       </View>
-      <FAB />
+        <FAB />
       </View>
   );
 }

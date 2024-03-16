@@ -8,6 +8,7 @@ import {CadastroBase} from '../pages/cadastros/cadastroBase';
 import CadastroReceita from '../pages/cadastros/cadastroReceita';
 import {ConsultaProduto} from '../pages/consultas/produto';
 import { Cadastros } from '../pages/home/cadastros';
+import { NomearReceita } from '../components/receita';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,13 @@ export function StackRoutes(){
             <Stack.Screen
             name="consultaProduto"
             component={ConsultaProduto}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
+            name="criaReceita"
+            component={NomearReceita}
             options={{
                 headerShown:false,
             }}

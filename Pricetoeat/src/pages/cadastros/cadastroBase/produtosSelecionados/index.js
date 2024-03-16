@@ -72,7 +72,7 @@
                   preco: globalArray[i].PrecoProd,
                   quantidade: quants[i],
                   custo: custo,
-                  unidade: unidade
+                  unidade: globalArray[i].UnidadeMedida
                 });
               }
               const docRef = await addDoc(collection(firestore, 'bases'), {
@@ -84,8 +84,10 @@
               });
               // console.log(docRef);
               setNomeBase('');
-              removeItemFromGlobalArray('');
-              navigation.navigate('ProdutosSelecionados')
+              // for (let i = 0; i < globalArray.length; i++) {
+              //   removeItemFromGlobalArray('');
+              // }
+              setTimeout( () => navigation.navigate('home'), duration = 1000)
             }
           });
         } catch (error) {
@@ -163,8 +165,8 @@
       textShadowRadius: 4,
       textShadowColor: '#BFD8AF',
       textShadowOffset: {
-          width: 4,
-          height: 2
+        width: 4,
+        height: 2
       }
     },
     subtitle:{
@@ -176,8 +178,8 @@
       textShadowRadius: 4,
       textShadowColor: '#BFD8AF',
       textShadowOffset: {
-          width: 4,
-          height: 2
+        width: 4,
+        height: 2
       }
     },
     subtitleFlat: {
@@ -187,10 +189,10 @@
       textShadowRadius: 6,
       textShadowColor: '#000',
       textShadowOffset: {
-          width: 1,
-          height: 1
+        width: 1,
+        height: 1
       }
-      },
+    },
     textCompound:{
       fontSize:14,
       fontFamily: 'Quicksand-Regular',
@@ -232,8 +234,7 @@
       borderColor: '#99BC85',
       backgroundColor: '#D4E7C5',
       height: '12%'
-  
-  },
+    },
     underline: {
       textDecorationLine: 'underline'
     },
@@ -254,8 +255,8 @@
     },
     observation: {
       color: '#000',
-      marginBottom: '5%',
-      marginLeft:'5%',
+      marginBottom: '3%',
+      // marginLeft:'2%',
       fontFamily: 'Quicksand-Regular',
     },
     input: {
@@ -273,5 +274,4 @@
     margin: {
       marginBottom:'8%'
     }
-
   })

@@ -41,7 +41,7 @@ function ProdutoItem({ produto }) {
     return (
       <TouchableOpacity 
         style={styles.buttonProduto}
-        onLongPress={handleModalAdicionar}>
+        onPress={handleModalAdicionar}>
             <View style={styles.viewProduto}>
               <Text style={[styles.subtitle, styles.underline]}>{produto.Nome}</Text>
               <Text style={styles.textCompound}>R${produto.PrecoProd} por {unidade} </Text>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -11,14 +11,13 @@ import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
 
 function ProdutoItem({ produto }) {
+    const navigation = useNavigation();
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
         'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
     });
-    if (!loaded) {
-        return null;
-    }
+    if (!loaded) { return null; }
     const flashMessageSucesso = () => {
         showMessage({
             message: 'Item Excluído.',
@@ -41,8 +40,7 @@ function ProdutoItem({ produto }) {
         } catch (error) {
             console.error('erro ao excluir o produto', error);
             flashMessageErro();
-        }
-    }
+        }}
     let unidade = '';
     if (produto.UnidadeMedida == '1') { unidade = 'kilo'; }
     else if (produto.UnidadeMedida == '2') { unidade = 'grama'; }
@@ -65,8 +63,10 @@ function ProdutoItem({ produto }) {
                             <Text style={styles.textCompound}>ID: {produto.IDProduto}</Text>
                         </View>
                         <View>
-                            <TouchableOpacity style={styles.favButton}>
-                                <Ionicons size={35} color={'#99BC85'} name='heart-sharp' />
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('criaReceita')}
+                                style={styles.favButton}>
+                                <Ionicons size={35} color={'#99BC85'} name='add-circle-outline' />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
         textAlign: 'left'
     },
     favButton: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginRight:5,
     },
     image: {
         backgroundColor: '#99BC85',

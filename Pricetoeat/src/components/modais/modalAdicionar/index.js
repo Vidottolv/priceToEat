@@ -5,10 +5,20 @@ import { useNavigation } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../controller';
 import { useGlobalContext } from '../../context/produtoContext';
+import { useFonts } from 'expo-font';
 
 export function ModalAdicionar({ produto, handleClose }) {
     const { addToGlobalArray } = useGlobalContext(); // Extraímos addToGlobalArray diretamente do contexto
-  
+    const [loaded] = useFonts({
+      'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
+      'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
+      'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
+      'Quicksand-Var': require('../../../assets/fonts/Quicksand-VariableFont_wght.ttf'),
+    });
+    if (!loaded) {
+      return null;
+    }
+
     async function addProdutoArray(produto) {
       onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -30,7 +40,7 @@ export function ModalAdicionar({ produto, handleClose }) {
           <View style={styles.headerModal}>
             <Text style={styles.title}>Adicionar produto?</Text>
             <TouchableOpacity style={styles.backButton} onPress={() => handleClose()}>
-              <Ionicons size={35} color={'#FFF'} name='close-circle-outline' />
+              <Ionicons size={35} color={'#000'} name='close-circle-outline' />
             </TouchableOpacity>
           </View>
           <Text style={styles.text}>Aceite a adição do Produto para que ele faça parte da base.</Text>
@@ -58,24 +68,24 @@ const styles = StyleSheet.create({
         flex: 1
     },
     content: {
-        backgroundColor: '#E06F72',
-        height: '30%',
+        backgroundColor: '#D4E7C5',
+        height: '25%',
         width: '80%',
         borderRadius: 22,
-        borderWidth:1,
-        borderColor:'#FFF'
+        borderWidth:4,
+        borderColor:'#99BC85'
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color: '#FFF',
+        fontFamily:'Quicksand-Bold',
+        color: '#000',
         marginLeft: '7%',
         marginTop: '3%'
     },
     textButton: {
-        color: '#FFF',
+        color: '#000',
         fontSize: 16,
-        fontWeight: 'bold'
+        fontFamily:'Quicksand-Bold',
     },
     backButton: {
         marginTop: '3%',
@@ -86,14 +96,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     centerModal: {
-        marginTop: '20%',
+        marginTop: '10%',
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
     },
     button: {
         borderWidth: 2,
-        borderColor: '#FFF',
+        borderColor: '#000',
         borderRadius: 25,
         height: 40,
         width: '35%',
@@ -101,8 +111,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     text:{
-        color:'#FFF',
+        color:'#000',
+        fontSize:15,
         marginLeft:'7%',
-        marginRight:'7%'
+        marginRight:'7%',
+        fontFamily:'Quicksand-Regular',
     }
 })
