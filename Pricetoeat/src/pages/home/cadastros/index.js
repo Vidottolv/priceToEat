@@ -71,9 +71,11 @@ export function Cadastros() {
               </Text>
           </TouchableOpacity>
           </View>
-        <View style={ styles.containerDeProdutos }>
-          { isPressedProduto && <ConsultaProduto /> }
+          { isPressedProduto && 
+            <Text style={styles.textoEdit}>* Clique nos produtos para editar.</Text> }
+        <View style={ styles.containerDeProdutos }>  
           { isPressedBase && <ConsultaBase /> }
+          { isPressedProduto && <ConsultaProduto /> }
       </View>
         <FAB />
       </View>
@@ -122,11 +124,17 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign:'center',
-
     fontSize: 55,
     fontFamily: 'Quicksand-Bold',
     color: '#000',
     marginTop: '5%',
+  },
+  textoEdit:{
+    fontSize: 16,
+    color: '#000',
+    alignSelf:'flex-start',
+    marginLeft:'6%',
+    fontFamily: 'Quicksand-Regular',
   },
   underline: {
     textDecorationLine: 'underline'

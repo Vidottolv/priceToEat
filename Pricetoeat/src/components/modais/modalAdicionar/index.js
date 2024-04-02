@@ -8,7 +8,7 @@ import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
 
 export function ModalAdicionar({ produto, handleClose }) {
-    const { addToGlobalArray } = useGlobalContext(); // Extraímos addToGlobalArray diretamente do contexto
+    const { addToGlobalArray } = useGlobalContext();
     const [loaded] = useFonts({
       'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
       'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -47,8 +47,7 @@ export function ModalAdicionar({ produto, handleClose }) {
           <View style={styles.centerModal}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => addProdutoArray(produto)} // Removemos a passagem do addToGlobalArray como argumento
-            >
+              onPress={() => addProdutoArray(produto)}>
               <Text style={styles.textButton}>Sim</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => handleClose()}>

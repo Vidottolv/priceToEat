@@ -192,6 +192,10 @@ const styles = StyleSheet.create({
     underline: {
         textDecorationLine: 'underline'
     },
+    textButton: {
+        color: '#000',
+        fontFamily: 'Quicksand-Bold',
+    },
     buttonBase: {
         flex: 1,
         borderWidth: 2,
@@ -206,5 +210,5 @@ const styles = StyleSheet.create({
     },
     flat: {
         marginTop: '5%',
-    },
+    }
 })

@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
 
-function ProdutoItem({ produto }) {
+function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
     const navigation = useNavigation();
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
@@ -40,31 +40,33 @@ function ProdutoItem({ produto }) {
         } catch (error) {
             console.error('erro ao excluir o produto', error);
             flashMessageErro();
-        }}
+        }}         
     let unidade = '';
-    if (produto.UnidadeMedida == '1') { unidade = 'kilo'; }
-    else if (produto.UnidadeMedida == '2') { unidade = 'grama'; }
-    else if (produto.UnidadeMedida == '3') { unidade = 'litro'; }
-    else if (produto.UnidadeMedida == '4') { unidade = 'ml'; }
+    if (produto?.UnidadeMedida == '1') { unidade = 'kilo'; }
+    else if (produto?.UnidadeMedida == '2') { unidade = 'grama'; }
+    else if (produto?.UnidadeMedida == '3') { unidade = 'litro'; }
+    else if (produto?.UnidadeMedida == '4') { unidade = 'ml'; }
     else { unidade = 'unid'; }
     return (
         <TouchableOpacity
             style={styles.buttonProduto}
-            onLongPress={deletar}>
+            onLongPress={deletar}
+            onPress={() => press(produto)}
+            >
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
                     <Image source={require('../../assets/priceteatFundoRem.png')} />
                 </View>
                 <View style={styles.textos}>
-                    <Text style={[styles.subtitle, styles.underline]}>{produto.Nome}</Text>
+                    <Text style={[styles.subtitle, styles.underline]}>{produto?.Nome}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            <Text style={styles.textCompound}>R${produto.PrecoProd} por {unidade}</Text>
-                            <Text style={styles.textCompound}>ID: {produto.IDProduto}</Text>
+                            <Text style={styles.textCompound}>R${produto?.PrecoProd} por {unidade}</Text>
+                            <Text style={styles.textCompound}>ID: {produto?.IDProduto}</Text>
                         </View>
                         <View>
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('criaReceita')}
+                                onPress={() => setNavigateToNomearReceita(produto)}
                                 style={styles.favButton}>
                                 <Ionicons size={35} color={'#99BC85'} name='add-circle-outline' />
                             </TouchableOpacity>
@@ -79,7 +81,12 @@ function ProdutoItem({ produto }) {
 export function ConsultaProduto() {
     const [produtos, setProdutos] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [navigateToNomearReceita, setNavigateToNomearReceita] = useState(false);
     const navigation = useNavigation();
+
+    const handleEdit = (produto) => {
+        navigation.navigate('editaProduto', { produto });
+      };
 
     async function consultarProdutos() {
         onAuthStateChanged(auth, async (user) => {
@@ -90,9 +97,9 @@ export function ConsultaProduto() {
                     produtosSnapshot.forEach((doc) => {
                         const produto = {
                             id: doc.id,
-                            ...doc.data(),
+                            ...doc?.data(),
                         };
-                        produtosArray.push(produto);
+                        produtosArray?.push(produto);
                     });
                     setProdutos(produtosArray);
                     setIsLoading(false);
@@ -103,9 +110,15 @@ export function ConsultaProduto() {
         })
     }
     useEffect(() => {
-        consultarProdutos(),
-            [];
-    })
+        if (navigateToNomearReceita) {
+            navigation.navigate("nomearReceita", 
+            { produto: navigateToNomearReceita });
+            setNavigateToNomearReceita(false); 
+        }
+    }, [navigateToNomearReceita]);
+    useEffect(() => {
+        consultarProdutos();
+    },[])
 
     return (
         <SafeAreaView style={styles.container}>
@@ -119,8 +132,12 @@ export function ConsultaProduto() {
                 <animatable.View animation={'fadeInRight'}>
                     <FlatList style={styles.flat}
                         data={produtos}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => <ProdutoItem produto={item} />} />
+                        keyExtractor={(item) => item?.id}
+                        renderItem={({ item }) => 
+                            <ProdutoItem 
+                                produto={ item }
+                                press={handleEdit}
+                                setNavigateToNomearReceita={ setNavigateToNomearReceita } />} />
                 </animatable.View>
             )}
         </SafeAreaView>

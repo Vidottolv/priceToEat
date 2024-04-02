@@ -39,7 +39,9 @@
     "react-native-snackbar": "^2.6.2",
     "react-native-svg": "13.9.0",
     "react-number-format": "^5.3.3",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "expo-image-picker": "~14.3.2",
+    "expo-file-system": "~15.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

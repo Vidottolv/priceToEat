@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword, getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from "react";
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, KeyboardAvoidingView, Image, PermissionsAndroid, launchImageLibrary, useEffect} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Button, Image, PermissionsAndroid, launchImageLibrary, useEffect,ScrollView} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { Snackbar } from 'react-native-paper';
 import * as animatable from 'react-native-animatable';
@@ -10,13 +10,16 @@ import { ModalTrocaSenha } from '../../components/modais/modalTrocaSenha';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import {getFirestore, collection, doc, setDoc} from 'firebase/firestore';
-import { ScrollView } from 'react-native-gesture-handler';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+
 
 export default function Signin(){
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fotoURI, setFotoURI] = useState('');
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [nomeCadastro, setNomeCadastro] = useState('');
     const [emailCadastro, setEmailCadastro] = useState('');
     const [senhaCadastro, setSenhaCadastro] = useState('');
@@ -48,30 +51,83 @@ export default function Signin(){
     if (!loaded) {
         return null;
     }
+    const toggleSecureEntry = () => {
+        setEscondeSenha(!escondeSenha);
+    };
 
-    const handleCreateAccount = (email, senha, nome) => {
-        createUserWithEmailAndPassword(
-            auth,email,senha)
+    const handleCreateAccount = (email, senha, nome, filename, blob) => {
+        createUserWithEmailAndPassword(auth, email, senha)
             .then((response) => {
                 const uid = response.user.uid
                 const data = {
-                    id:uid,
+                    id: uid,
                     email,
-                    nome
+                    nome,
+                    filename,
+                    blob
                 };
                 const usersRef = collection(firestore, 'usuarios');
                 const userDoc = doc(usersRef, uid);
                 setDoc(userDoc, data);
                 setSnackbarSucesso(true);
                 setTimeout(() => setSnackbarSucesso(false), 1999)
-                setTimeout( () => navigation.navigate('home'), duration = 2000)
-        }).catch(error => {
-            console.log(error)
-            setSnackbarErro(true);
-            setTimeout(() => setSnackbarErro(false), 2000)
-        })
+                setTimeout(() => navigation.navigate('home'), duration = 2000)
+            }).catch(error => {
+                console.log(error)
+                setSnackbarErro(true);
+                setTimeout(() => setSnackbarErro(false), 2000)
+            })
     }
-
+    
+    let result = '';
+    
+    const uploadMediaFile = async () => {
+        result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            console.log(image)
+        }
+    }
+    
+    const uploadMedia = async () => {
+        setUploading(true)
+        try {
+            const { uri } = await FileSystem.getInfoAsync(image);
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = (e) => {
+                    reject(new TypeError('Network Request Failed'));
+                };
+                xhr.responseType = 'blob';
+                xhr.open('GET', uri, true);
+                xhr.send(null);
+            });
+            const filename = image.substring(image.lastIndexOf('/') + 1);
+            const blobData = await new Response(blob).blob();
+            const reader = new FileReader();
+            reader.readAsDataURL(blobData);
+            reader.onloadend = () => {
+                const Blobbase64 = reader.result;
+            
+            handleCreateAccount(emailCadastro, senhaCadastro, nomeCadastro, filename, Blobbase64);
+            setUploading(false);
+            setImage(null);
+            setNomeCadastro(null);
+            setSenhaCadastro(null);
+            }
+        } catch (error) {
+            console.error(error);
+            setUploading(false);
+        }   
+    }
         // useEffect(() => {
         //     (async () => {
         //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
@@ -103,6 +159,7 @@ export default function Signin(){
                 end={{ x: 0, y: 1 }}
                 locations={[0.6, 0.8]}
                 colors={['#99BC85', '#fff']}>
+            <ScrollView>
             <animatable.View animation={'fadeInUp'} style={styles.containerForm}>
             <Text style={[styles.title, styles.underline]}> PriceT'eat </Text>
             <View style={styles.rowLoginCadastro}>
@@ -135,15 +192,17 @@ export default function Signin(){
                         onChangeText={(value) => setPassword(value)}
                         style={styles.inputSenha}
                         secureTextEntry={escondeSenha}/>
-                    {/* <TouchableOpacity 
-                        style={[styles.icon, { position: 'absolute', right:-30, top: 18 }]}
-                        onPress={ () => setEscondeSenha(!escondeSenha)}>
-                            {   escondeSenha ?
-                                <Ionicons name="eye-sharp" color="#000" size={25}/>
-                                :
-                                <Ionicons name="eye-off" color="#000" size={25}/>
-                            }
-                    </TouchableOpacity> */}
+                        <TouchableOpacity 
+                            style={styles.SpaceIcon} 
+                            activeOpacity={1}
+                            onPress={toggleSecureEntry}>
+                                <Ionicons 
+                                    name={escondeSenha ?
+                                     "eye-outline" : "eye-off-outline"}
+                                    size={24}
+                                    color="black"
+                                    style={styles.icon}/>
+                        </TouchableOpacity>
                 </View>
                 <TouchableOpacity 
                     style={styles.buttonForget} 
@@ -163,10 +222,15 @@ export default function Signin(){
                 </View>)}
                 {cadastroSelected && (
                     <View>
-                        {/* <TouchableOpacity onPress={handleSelectFoto} style={styles.botaoSelecionarFoto}>
-                            <Text style={styles.textoBotaoSelecionarFoto}>Selecionar Foto</Text>
+                        <TouchableOpacity
+                            style={styles.buttonSelectPhoto}
+                            onPress={uploadMediaFile}>
+                                {image ? (
+                                    <Image source={{ uri: image }} style={styles.selectedImage} />
+                                ) : (
+                                    <Text style={styles.buttonPhotoText}>Escolha a Foto</Text>
+                                )}
                         </TouchableOpacity>
-                        {fotoURI && <Image source={{ uri: fotoURI }} style={styles.fotoSelecionada} />} */}
                         <Text style={styles.titulo}>Nome</Text>
                         <TextInput
                             placeholder="Seu Nome"
@@ -182,25 +246,29 @@ export default function Signin(){
                             onChangeText={(value) => setEmailCadastro(value)}
                             style={styles.textinput}/>
                         <Text style={styles.subtitle}>Senha</Text>
+                        <View style={{flexDirection:'row'}}>
                         <TextInput
                             placeholder="Sua Senha"
                             placeholderTextColor={'#939e96'}
                             value={senhaCadastro}
                             onChangeText={(value) => setSenhaCadastro(value)}
                             style={styles.inputSenha}
-                            secureTextEntry={escondeSenha}/>
-                        {/* <TouchableOpacity 
-                            style={[styles.icon, { position: 'absolute', right:-30, top: 215 }]}
-                            onPress={ () => setEscondeSenha(!escondeSenha)}>
-                                {   escondeSenha ?
-                                    <Ionicons name="eye-sharp" color="#000" size={25}/>
-                                    :
-                                    <Ionicons name="eye-off" color="#000" size={25}/>
-                                }
-                        </TouchableOpacity> */}
+                            secureTextEntry={escondeSenha} />
+                        <TouchableOpacity 
+                            style={styles.SpaceIcon} 
+                            activeOpacity={1}
+                            onPress={toggleSecureEntry}>
+                                <Ionicons 
+                                    name={escondeSenha ?
+                                     "eye-outline" : "eye-off-outline"}
+                                    size={24}
+                                    color="black"
+                                    style={styles.icon}/>
+                        </TouchableOpacity>
+                        </View>
                         <TouchableOpacity 
                             style={styles.buttonAcessarCadastrar} 
-                            onPress={() => handleCreateAccount(emailCadastro,senhaCadastro, nomeCadastro)}>
+                            onPress={() => uploadMedia()}>
                             <Text style={styles.buttonTextAcessarCadastrar}>Cadastrar</Text>
                         </TouchableOpacity>
                  </View>
@@ -212,6 +280,7 @@ export default function Signin(){
                     <ModalTrocaSenha handleClose={() => setSenhaVisible(false)} email={email}/>
             </Modal>
             </animatable.View>
+            </ScrollView>
             <Snackbar
                 visible={SnackbarSucesso}
                 style={{ height: 60, backgroundColor: '#5ea955' }}>
@@ -303,6 +372,7 @@ const styles = StyleSheet.create({
         height:60,
         width:'100%',
         marginTop:14,
+        marginBottom:42,
         justifyContent:'center',
         alignItems:'center'
     },
@@ -328,6 +398,30 @@ const styles = StyleSheet.create({
     forgetText:{
         color:'#000'
     },
+    buttonSelectPhoto:{
+        backgroundColor:'#99BC85',
+        borderRadius:72,
+        paddingVertical:8,
+        height:120,
+        width:120,
+        marginBottom:10,
+        justifyContent:'center',
+        alignItems:'center',
+        alignSelf:'center',
+        borderWidth:2,
+        borderColor:'#BFD8AF'
+    },
+    selectedImage:{
+        width:120,
+        height:120,
+        borderRadius:72,
+        borderWidth:2,
+        borderColor:'#BFD8AF'
+    },
+    buttonPhotoText:{
+        color:'#FFF',
+        fontFamily:'Quicksand-Regular'
+    },
     underline: {
         textDecorationLine: 'underline'
     },
@@ -339,18 +433,25 @@ const styles = StyleSheet.create({
     inputSenha:{
         color:'#515151',
         backgroundColor:'#FFF',
-        borderRadius:8,
+        borderBottomLeftRadius:8,
+        borderTopLeftRadius:8,
         height:60,
         marginBottom:12,
         fontSize:16,
-        width:'100%',
+        width:'80%',
         padding:20,
     },
-    icon:{
+    SpaceIcon:{
         width:'20%',
         color:'#000',
-        height:60,
-        marginBottom:12
-        
+        height:60, 
+        backgroundColor:'#FFF',
+        borderBottomRightRadius:8,
+        borderTopRightRadius:8
+    },
+    icon:{
+        justifyContent:'center',
+        alignSelf:'center',
+        marginTop:'25%',
     }
 })

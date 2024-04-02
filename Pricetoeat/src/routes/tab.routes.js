@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {Cadastros} from '../pages/home/cadastros'
-import {Consultas} from '../pages/home/consultas'
 import {Ionicons, Entypo} from '@expo/vector-icons'
 import { CadastroBase } from "../pages/cadastros/cadastroBase";
 import ProdutosSelecionados  from "../pages/cadastros/cadastroBase/produtosSelecionados";

@@ -6,9 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CadastroProduto from '../pages/cadastros/cadastroProduto';
 import {CadastroBase} from '../pages/cadastros/cadastroBase';
 import CadastroReceita from '../pages/cadastros/cadastroReceita';
-import {ConsultaProduto} from '../pages/consultas/produto';
 import { Cadastros } from '../pages/home/cadastros';
 import { NomearReceita } from '../components/receita';
+import EditarProdutoScreen from '../pages/edicoes/editaProduto';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,15 +65,15 @@ export function StackRoutes(){
             }}
             />
             <Stack.Screen
-            name="consultaProduto"
-            component={ConsultaProduto}
+            name="nomearReceita"
+            component={NomearReceita}
             options={{
                 headerShown:false,
             }}
             />
             <Stack.Screen
-            name="criaReceita"
-            component={NomearReceita}
+            name="editaProduto"
+            component={EditarProdutoScreen}
             options={{
                 headerShown:false,
             }}
