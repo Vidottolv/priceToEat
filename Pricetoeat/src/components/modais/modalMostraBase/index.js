@@ -56,18 +56,18 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
               Custo da Base: R${base?.custoBase}
             </Text>
             {renderizarComponentes()}
-            <TouchableOpacity
-            style={styles.centro}>
-              <Text style={[styles.textoReceita,styles.underline]}>Edite ou adicione produtos</Text>              
-            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.bottom}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('nomearReceita')}
+            onPress={() => navigation.navigate('nomearReceita', { base: base })}
             style={styles.botaoReceita}>
-            <Text style={[styles.textoReceita, styles.underline]}>Adicione em uma receita</Text>
+            <Text style={[styles.textoReceita, styles.underline]}>Add numa receita</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.botaoReceita}>
+              <Text style={[styles.textoReceita,styles.underline]}>Editar/Add produtos</Text>              
+            </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -114,10 +114,14 @@ const styles = StyleSheet.create({
     width: '90%'
   },
   bottom: {
+    display:'flex',
+    flexDirection:'row',
     position: 'absolute',
     bottom: 150,
     width: '100%',
     alignItems: 'center',
+    justifyContent:'center',
+    columnGap:10
   },
   text: {
     color: '#000',
@@ -143,11 +147,17 @@ const styles = StyleSheet.create({
   },
   botaoReceita: {
     marginTop: '92%',
-    alignItems: 'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 45,
+    width: '35%',
+    padding: 4,
+    borderRadius: 40,
+    backgroundColor: '#99BC85'
   },
   textoReceita: {
     fontFamily: 'Quicksand-Bold',
-    fontSize: 16
+    fontSize: 14
   },
   centro:{
     marginTop:'5%',

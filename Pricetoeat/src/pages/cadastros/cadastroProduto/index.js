@@ -136,11 +136,6 @@ export default function CadastroProduto() {
                             onChangeText={(masked, unmasked) => {
                                 setTamProdBruto(unmasked);
                             }} />
-                        {/* <NumericInput
-                        value={tamProdBruto} onChange={value => setTamProdBruto(value)}
-                        rounded
-                        totalWidth={170} totalHeight={50}
-                        textColor={'black'} borderColor={'#000'} rightButtonBackgroundColor={'#fff'} leftButtonBackgroundColor={'#fff'} /> */}
                         <TouchableOpacity style={styles.buttonCadastrar} onPress={cadastraProduto}>
                             <Text style={styles.textButton}>Cadastrar</Text>
                         </TouchableOpacity>

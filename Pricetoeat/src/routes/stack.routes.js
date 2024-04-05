@@ -1,14 +1,14 @@
 import Signin from '../pages/signin';
 import Welcome from '../pages/welcome'
-import {TabBases, TabRoutes} from './tab.routes';
+import { TabBases } from './tab.routes';
 import CadastroUsuario from '../pages/cadastroUser';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CadastroProduto from '../pages/cadastros/cadastroProduto';
-import {CadastroBase} from '../pages/cadastros/cadastroBase';
 import CadastroReceita from '../pages/cadastros/cadastroReceita';
 import { Cadastros } from '../pages/home/cadastros';
 import { NomearReceita } from '../components/receita';
 import EditarProdutoScreen from '../pages/edicoes/editaProduto';
+import EditarReceitaScreen from '../pages/edicoes/editaReceita';
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +74,13 @@ export function StackRoutes(){
             <Stack.Screen
             name="editaProduto"
             component={EditarProdutoScreen}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
+            name="editaReceita"
+            component={EditarReceitaScreen}
             options={{
                 headerShown:false,
             }}

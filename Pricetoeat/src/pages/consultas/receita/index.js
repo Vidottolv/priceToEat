@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
@@ -11,7 +10,8 @@ import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
 import { ModalMostraBase } from '../../../components/modais/modalMostraBase';
 
-function BaseItem({ base, onPressItem }) {
+function ReceitaItem({ receita }) {
+    const navigation = useNavigation();
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -23,42 +23,42 @@ function BaseItem({ base, onPressItem }) {
     const flashMessageSucesso = () => {
         showMessage({
             message: 'Item Excluído.',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger',
+            type: 'info',
             backgroundColor: '#0bbd29'
         });
     };
     const flashMessageErro = () => {
         showMessage({
             message: 'Erro ao excluir item',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info',
         });
     };
     const deletar = async () => {
         try {
-            const baseRef = doc(collection(firestore, 'bases'), base.id);
-            await deleteDoc(baseRef);
+            const receitaRef = doc(collection(firestore, 'receitas'), receita.id);
+            await deleteDoc(receitaRef);
             console.log('excluído');
             flashMessageSucesso();
         } catch (error) {
-            console.error('erro ao excluir o produto', error);
+            console.error('erro ao excluir a receita', error);
             flashMessageErro();
         }
     }
     return (
         <TouchableOpacity
             style={styles.buttonBase}
-            onPress={() => onPressItem(base)}>
+            onPress={() => navigation.navigate('editaReceita')}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
                     {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
                 </View>
                 <View style={styles.textos}>
-                    <Text style={[styles.subtitle, styles.underline]}>{base.Nome}</Text>
+                    <Text style={[styles.subtitle, styles.underline]}>{receita?.Nome}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
+                            {/* <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
                             <Text style={styles.textCompound}>{base.listaCustos[0].produto} - Custo: R${base.listaCustos[0].custo}</Text>
-                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
+                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text> */}
                         </View>
                     </View>
                 </View>
@@ -67,46 +67,45 @@ function BaseItem({ base, onPressItem }) {
     );
 }
 
-export function ConsultaBase() {
-    const [bases, setBases] = useState([]);
+export function ConsultaReceita() {
+    const [receitas, setReceitas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
-    const [baseId, setBaseId] = useState(null);
+    const [receitaId, setReceitaId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
-    const handleOpenModal = (base) => {
-        setBaseId(base);
+    const handleOpenModal = (receita) => {
+        setBaseId(receita);
         setOpenModal(true);
     };
     
-    async function consultarBases() {
+    async function consultarReceitas() {
         try {
             const user = await new Promise((resolve, reject) => {
                 onAuthStateChanged(auth, (user) => {
-                    if (user) {
+                    if (user) { 
                         resolve(user);
                     } else {
                         reject(new Error("Usuário não autenticado"));
                     }
                 });
             });
-    
-            const basesSnapshot = await getDocs(collection(firestore, 'bases'));
-            const basesArray = [];
-            basesSnapshot.forEach((doc) => {
-                const base = {
+            const receitasSnapshot = await getDocs(collection(firestore, 'receitas'));
+            const receitasArray = [];
+            receitasSnapshot.forEach((doc) => {
+                const receita = {
                     id: doc.id,
                     ...doc.data(),
                 };
-                basesArray.push(base);
+                receitasArray.push(receita);
             });
-            setBases(basesArray);
+            setReceitas(receitasArray);
             setIsLoading(false);
         } catch (error) {
-            console.error('Erro ao consultar bases:', error);
+            console.error('Erro ao consultar receitas:', error);
         }
     }
         useEffect(() => {
-        consultarBases();
+        consultarReceitas();
     },[])
 
     return (
@@ -121,17 +120,16 @@ export function ConsultaBase() {
                     ) : (
                         <animatable.View animation={'fadeInRight'}>
                             <FlatList style={styles.flat}
-                            data={bases}
+                            data={receitas}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <BaseItem
-                                base={item}
+                                <ReceitaItem
+                                receita={item}
                                 onPressItem={handleOpenModal}
                                 />
                             )}
                             />
-                        {/* Use o componente ModalMostraBase com a letra maiúscula correta */}
-                        <ModalMostraBase modalVisible={openModal} base={baseId} handleClose={() => setOpenModal(false)} />
+                        {/* <ModalMostraBase modalVisible={openModal} base={baseId} handleClose={() => setOpenModal(false)} /> */}
                     </animatable.View>
                     )
             }
@@ -192,10 +190,6 @@ const styles = StyleSheet.create({
     underline: {
         textDecorationLine: 'underline'
     },
-    textButton: {
-        color: '#000',
-        fontFamily: 'Quicksand-Bold',
-    },
     buttonBase: {
         flex: 1,
         borderWidth: 2,
@@ -210,5 +204,5 @@ const styles = StyleSheet.create({
     },
     flat: {
         marginTop: '5%',
-    }
+    },
 })

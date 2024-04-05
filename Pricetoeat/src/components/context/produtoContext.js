@@ -53,11 +53,11 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const removeItemFromReceitaArray = (index) => {
-    const newArray = [...globalArray];
+    const newArray = [...receitaArray];
     newArray.splice(index, 1);
     setReceitaArray(newArray);
-    // console.log(newArray)
   };
+  
 
   return (
     <GlobalContext.Provider

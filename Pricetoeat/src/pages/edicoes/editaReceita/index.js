@@ -4,31 +4,33 @@ import * as animatable from 'react-native-animatable'
 import { Ionicons } from '@expo/vector-icons';
 import { firestore } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
+import { useNavigation } from '@react-navigation/native';
 
-export default function EditarProdutoScreen({ route, navigation }) {
-  const [editedProduto, setEditedProduto] = useState(route.params.produto);
+export default function EditarReceitaScreen() {
+    const navigation = useNavigation();
+//   const [editedProduto, setEditedProduto] = useState(route.params.produto);
   const cancelEdit = () => { navigation.goBack(); };
 
-  const saveEdit = async () => {
-    try {
-        const produtoRef = doc(firestore, 'produtos', editedProduto.id);
-        const docData = {
-            Nome: editedProduto?.Nome,
-            PrecoProd: parseInt(editedProduto?.PrecoProd), 
-        }
-        await updateDoc(produtoRef, docData);
-        console.log('Produto atualizado com sucesso!');
-        navigation.navigate('home');
-    } catch (error) {
-      console.error('Erro ao atualizar o produto:',error);
-    }
-  };
+//   const saveEdit = async () => {
+//     try {
+//         const produtoRef = doc(firestore, 'produtos', editedProduto.id);
+//         const docData = {
+//             Nome: editedProduto?.Nome,
+//             PrecoProd: parseInt(editedProduto?.PrecoProd), 
+//         }
+//         await updateDoc(produtoRef, docData);
+//         console.log('Produto atualizado com sucesso!');
+//         navigation.navigate('home');
+//     } catch (error) {
+//       console.error('Erro ao atualizar o produto:',error);
+//     }
+//   };
 
   return (
    <View style={styles.container}>
     <animatable.View animation={'fadeInRight'} style={{width:'100%'}}>
         <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>Editar Produto</Text>
+            <Text style={[styles.title, styles.underline]}>Editar Receita</Text>
                 <TouchableOpacity style={styles.backButton} onPress={() => cancelEdit()}>
                     <Ionicons
                         size={30}
@@ -37,25 +39,24 @@ export default function EditarProdutoScreen({ route, navigation }) {
                 </TouchableOpacity>
             </View>
         <View style={styles.compound}>
+            
+
             <Text style={styles.subtitle}>Nome do produto</Text>
             <TextInput
-                value={editedProduto.Nome}
-                onChangeText={(text) => setEditedProduto({ ...editedProduto, Nome: text })}
+                // onChangeText={(text) => setEditedProduto({ ...editedProduto, Nome: text })}
                 placeholder="Nome"
                 style={styles.input}/>
             <Text style={styles.subtitle}>Preço do produto</Text>
             <TextInput
-                value={editedProduto.PrecoProd.toString()}
-                onChangeText={(text) => {
-                    const numericValue = text.replace(/[^0-9]/g, '');
-                    setEditedProduto({ ...editedProduto, PrecoProd: numericValue });
-                }}
+                // onChangeText={(text) => {
+                //     const numericValue = text.replace(/[^0-9]/g, '');
+                //     setEditedProduto({ ...editedProduto, PrecoProd: numericValue });
+                // }}
                 placeholder="Preço"
                 keyboardType="numeric"
                 style={styles.input}/>
                 <TouchableOpacity 
-                    style={styles.buttonCadastrar}
-                    onPress={saveEdit}>
+                    style={styles.buttonCadastrar}>
                     <Text style={styles.textButton}>Salvar</Text>
                 </TouchableOpacity>
         </View>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import FAB from '../../../components/Button/FAB.js';
 import { ConsultaProduto } from '../../consultas/produto/index.js'
 import { ConsultaBase } from '../../consultas/bases/index.js';
+import { ConsultaReceita } from '../../consultas/receita/index.js';
 import { useFonts } from 'expo-font';
-// import LottieView from 'lottie-react-native';
 
 export function Cadastros() {
   const navigation = useNavigation();
@@ -74,8 +74,9 @@ export function Cadastros() {
           { isPressedProduto && 
             <Text style={styles.textoEdit}>* Clique nos produtos para editar.</Text> }
         <View style={ styles.containerDeProdutos }>  
-          { isPressedBase && <ConsultaBase /> }
           { isPressedProduto && <ConsultaProduto /> }
+          { isPressedBase && <ConsultaBase /> }
+          { isPressedReceita && <ConsultaReceita /> }
       </View>
         <FAB />
       </View>
@@ -91,10 +92,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerBotoes: {
-    // borderBottomWidth:1,
-    // borderTopWidth:1,
-    // borderColor:'#C7C8CC',
-    // backgroundColor:'#FEFBF6',
     height:'6%',
     display: 'flex',
     flexDirection: 'row',
@@ -111,8 +108,6 @@ const styles = StyleSheet.create({
     justifyContent:'center'
   },
   textoBotoesCadastro: {
-    // marginLeft: '7%',
-    // transform: [{ rotate: '-90deg' }],
     fontSize: 16,
     fontWeight: 'normal',
     justifyContent:'center',
@@ -138,26 +133,5 @@ const styles = StyleSheet.create({
   },
   underline: {
     textDecorationLine: 'underline'
-  },
-  textCompound: {
-    fontSize: 18,
-    color: '#000',
-    marginLeft: '8%',
-    marginTop: '2%',
-    marginRight: '2%'
-  },
-  button: {
-    height: 50,
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 40,
-    backgroundColor: "#FFF",
-    margin: '10%',
-    borderWidth: 1,
-    borderColor: '#000'
-  },
-  buttonText: {
-    color: "#000",
-    fontSize: 16,
   },
 })

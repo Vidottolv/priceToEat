@@ -41,7 +41,6 @@ export default function Signin(){
             const user = userCredential.user;
             console.log('sucesso')
         }).catch(error => {
-            //console.log(error)
         })}
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../assets/fonts/Quicksand-Regular.ttf'),
@@ -78,9 +77,8 @@ export default function Signin(){
                 setTimeout(() => setSnackbarErro(false), 2000)
             })
     }
-    
+
     let result = '';
-    
     const uploadMediaFile = async () => {
         result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -93,19 +91,16 @@ export default function Signin(){
             console.log(image)
         }
     }
-    
     const uploadMedia = async () => {
         setUploading(true)
         try {
             const { uri } = await FileSystem.getInfoAsync(image);
             const blob = await new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
-                xhr.onload = () => {
-                    resolve(xhr.response);
-                };
-                xhr.onerror = (e) => {
-                    reject(new TypeError('Network Request Failed'));
-                };
+                xhr.onload = () => { 
+                    resolve(xhr.response); };
+                xhr.onerror = (e) => { 
+                    reject(new TypeError('Network Request Failed')); };
                 xhr.responseType = 'blob';
                 xhr.open('GET', uri, true);
                 xhr.send(null);
@@ -116,7 +111,6 @@ export default function Signin(){
             reader.readAsDataURL(blobData);
             reader.onloadend = () => {
                 const Blobbase64 = reader.result;
-            
             handleCreateAccount(emailCadastro, senhaCadastro, nomeCadastro, filename, Blobbase64);
             setUploading(false);
             setImage(null);
@@ -127,29 +121,7 @@ export default function Signin(){
             console.error(error);
             setUploading(false);
         }   
-    }
-        // useEffect(() => {
-        //     (async () => {
-        //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
-        //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        //         console.log('Permissão de acesso à galeria concedida');
-        //       } else {
-        //         console.log('Permissão de acesso à galeria negada');
-        //       }
-        //     })();
-        //   }, []);
-        //   const handleSelectFoto = () => {
-        //     launchImageLibrary({ mediaType: 'photo' }, (response) => {
-        //       if (response.didCancel) {
-        //         console.log('Seleção de foto cancelada');
-        //       } else if (response.error) {
-        //         console.log('Erro ao selecionar foto:', response.error);
-        //       } else {
-        //         setFotoURI(response.uri);
-        //       }
-        //     });
-        //   };
-          
+    }         
           
     return(
         <View style={styles.container}>
@@ -214,11 +186,6 @@ export default function Signin(){
                     onPress={handleSignIn}>
                         <Text style={styles.buttonTextAcessarCadastrar}>Acessar</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity 
-                    style={styles.buttonRegister} 
-                    onPress={() => navigation.navigate('cadastroUsuario')}>
-                        <Text style={[styles.registerText, styles.underline]}>Novo por aqui? Cadastre-se</Text>
-                </TouchableOpacity> */}
                 </View>)}
                 {cadastroSelected && (
                     <View>
@@ -298,19 +265,10 @@ export default function Signin(){
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        },
+    },
     gradient: {
         height: '100%',
         width: '100%',
-      },
-    containerHeader:{
-        marginTop:'15%',
-        marginBottom:'8%',
-    },
-    message:{
-        fontSize:28,
-        fontFamily:'Quicksand-Regular',
-        color:'#F3F3FF'
     },
     containerForm:{
         flex:1,
@@ -380,13 +338,6 @@ const styles = StyleSheet.create({
         color:'#FFF',
         fontSize:16,
         fontFamily:'Quicksand-Regular',
-    },
-    buttonRegister:{
-        marginTop:14,
-        alignSelf:'center',
-    },
-    registerText:{
-        color:'#DADADA'
     },
     buttonForget:{
         color:'#F3F3FF',
