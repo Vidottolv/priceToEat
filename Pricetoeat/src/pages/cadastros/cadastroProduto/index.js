@@ -5,7 +5,6 @@ import * as animatable from 'react-native-animatable'
 import { RadioButtonItem, RadioButtonGroup } from 'expo-radio-button';
 import NumericInput from 'react-native-numeric-input'
 import { firestore, auth } from '../../../controller';
-import { onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import { showMessage, hideMessage } from 'react-native-flash-message';
@@ -56,25 +55,22 @@ export default function CadastroProduto() {
     async function cadastraProduto() {
         if (nomeProduto != '' && precoProduto != null && tamProdBruto != null) {
             try {
-                const usuario = onAuthStateChanged(auth, async (user) => {
-                    if (user) {
+                const user = auth.currentUser;
+                if (user) {
                         const snapshot = await getDocs(collection(firestore, 'produtos'));
                         const qtyProdutos = snapshot.size + 1;
-                        const uid = user.uid;
                         const docRef = addDoc(collection(firestore, 'produtos'), {
                             Nome: nomeProduto,
-                            PrecoProd: precoProduto,
-                            TamProd: tamProdBruto,
-                            UnidadeMedida: current,
-                            IDUsuario: uid,
+                            Preco: parseInt(precoProduto,10),
+                            TamanhoEmbalagem: parseInt(tamProdBruto,10),
+                            UnidadeDeMedida: current,
+                            IDUsuario: user.uid,
                             IDProduto: qtyProdutos
                         });
                         // console.log(docRef);
                         setNomeProduto('');
                         flashMessageSucesso();
                     }
-                }
-                )
             } catch (error) { flashMessageErro(); }
         } else { flashMessageErro(); }
     }
@@ -117,11 +113,6 @@ export default function CadastroProduto() {
                             onChangeText={(masked, unmasked) => {
                                 setPrecoProduto(unmasked); // Update the state with unmasked value
                             }} />
-                        {/* <NumericInput
-                        value={precoProduto} onChange={value => setPrecoProduto(value)}
-                        rounded valueType='real'
-                        totalWidth={170} totalHeight={50}
-                        textColor={'black'} borderColor={'#000'} rightButtonBackgroundColor={'#fff'} leftButtonBackgroundColor={'#fff'} /> */}
                         <View style={{display: 'flex', flexDirection:'row', alignItems: 'center', marginTop: '5%' }}>
                             <Text style={styles.subtitle}>Tamanho do produto</Text>
                             <Ionicons   

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import FAB from '../../../components/Button/FAB.js';
@@ -17,6 +17,39 @@ export function Cadastros() {
     'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
     'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
   });
+  const [firstAccess, setFirstAccess] = useState(false);
+
+  useEffect(() => {
+    const checkFirstAccess = async () => {
+      const currentUser = auth().currentUser;
+      const userId = currentUser.uid;
+      const userRef = database().ref(`users/${userId}`);
+
+      try {
+        const dataSnapshot = await userRef.once('value');
+        if (dataSnapshot.exists()) {
+          const isFirstAccess = dataSnapshot.child('firstAccess').val();
+          setFirstAccess(isFirstAccess);
+          if (isFirstAccess) {
+            // Realize as ações necessárias para o primeiro acesso do usuário
+            // Por exemplo, exibir uma mensagem de boas-vindas, conceder recompensas, etc.
+            // Atualize os dados do usuário para indicar que não é mais o primeiro acesso
+            await userRef.update({ firstAccess: false });
+          }
+        } else {
+          // O usuário não existe no banco de dados, é o primeiro acesso
+          await userRef.set({ firstAccess: true });
+          // Realize as ações necessárias para o primeiro acesso do usuário
+        }
+      } catch (error) {
+        // Trate os erros de leitura do banco de dados, se necessário
+        console.error("Error checking first access:", error);
+      }
+    };
+
+    checkFirstAccess();
+  }, []);
+
   if (!loaded) {
     return null;
   }

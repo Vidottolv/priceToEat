@@ -3,8 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, query, where} from "firebase/firestore";
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -42,10 +41,10 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
             flashMessageErro();
         }}         
     let unidade = '';
-    if (produto?.UnidadeMedida == '1') { unidade = 'kilo'; }
-    else if (produto?.UnidadeMedida == '2') { unidade = 'grama'; }
-    else if (produto?.UnidadeMedida == '3') { unidade = 'litro'; }
-    else if (produto?.UnidadeMedida == '4') { unidade = 'ml'; }
+    if (produto?.UnidadeDeMedida == '1') { unidade = 'kilo'; }
+    else if (produto?.UnidadeDeMedida == '2') { unidade = 'grama'; }
+    else if (produto?.UnidadeDeMedida == '3') { unidade = 'litro'; }
+    else if (produto?.UnidadeDeMedida == '4') { unidade = 'ml'; }
     else { unidade = 'unid'; }
     return (
         <TouchableOpacity
@@ -61,7 +60,7 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
                     <Text style={[styles.subtitle, styles.underline]}>{produto?.Nome}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            <Text style={styles.textCompound}>R${produto?.PrecoProd} por {unidade}</Text>
+                            <Text style={styles.textCompound}>R${produto?.Preco} por {unidade}</Text>
                             <Text style={styles.textCompound}>ID: {produto?.IDProduto}</Text>
                         </View>
                         <View>
@@ -89,10 +88,10 @@ export function ConsultaProduto() {
       };
 
     async function consultarProdutos() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
+        const user = auth.currentUser;
+        if (user) {
                 try {
-                    const produtosSnapshot = await getDocs(collection(firestore, 'produtos'));
+                    const produtosSnapshot = await getDocs(query(collection(firestore, 'produtos'), where('IDUsuario', '==', user.uid)));
                     const produtosArray = [];
                     produtosSnapshot.forEach((doc) => {
                         const produto = {
@@ -107,7 +106,6 @@ export function ConsultaProduto() {
                     console.error('Erro ao consultar produtos:', error);
                 }
             }
-        })
     }
     useEffect(() => {
         if (navigateToNomearReceita) {

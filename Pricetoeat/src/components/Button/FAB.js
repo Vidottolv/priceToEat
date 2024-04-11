@@ -40,7 +40,7 @@ export default function FAB() {
       buttonSize:50,
       margin:5,
       icon: <Ionicons name="restaurant-outline" size={25}/>,
-      name: "cadastroReceita",
+      name: "firstSteps",
       position: 3
     },
     {

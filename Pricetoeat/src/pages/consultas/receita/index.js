@@ -2,15 +2,14 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView } from
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { hideMessage, showMessage } from 'react-native-flash-message';
+import { collection, getDocs, doc, deleteDoc, query, where} from "firebase/firestore";
+import { showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
-import { ModalMostraBase } from '../../../components/modais/modalMostraBase';
+import { ModalMostraReceita } from '../../../components/modais/modalMostraReceita';
 
-function ReceitaItem({ receita }) {
+function ReceitaItem({ receita, onPressItem }) {
     const navigation = useNavigation();
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
@@ -44,21 +43,46 @@ function ReceitaItem({ receita }) {
             flashMessageErro();
         }
     }
+    const verificarValoresNulos = () => {
+        for (const produto of receita.ProdutosReceita) {
+            if (produto.quantidade == 0 || produto.custo == 0) {
+                return true;
+            }
+        }
+        return false;
+    };
+    const showFlashMsg = () => {
+        setTimeout(() => {
+            showMessage({
+                message: 'Existem valores nulos, atualize-os!',
+                type: 'warning',
+            });
+        }, 2000);
+    };
+    const handlePressItem = () => {
+        if (verificarValoresNulos()) {
+            onPressItem(receita);
+            showFlashMsg();
+        } else {
+            onPressItem(receita);
+        }
+    };
+
     return (
         <TouchableOpacity
             style={styles.buttonBase}
-            onPress={() => navigation.navigate('editaReceita')}>
+            onPress={handlePressItem}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
                     {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
                 </View>
                 <View style={styles.textos}>
-                    <Text style={[styles.subtitle, styles.underline]}>{receita?.Nome}</Text>
+                    <Text style={[styles.subtitle, styles.underline]}>{receita?.nomeReceita}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            {/* <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
-                            <Text style={styles.textCompound}>{base.listaCustos[0].produto} - Custo: R${base.listaCustos[0].custo}</Text>
-                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text> */}
+                            <Text style={styles.textCompound}>Custo da Receita: R${receita?.custoReceita}</Text>
+                            <Text style={styles.textCompound}>{receita?.ProdutosReceita[0].Nome} - Custo: R${receita?.ProdutosReceita[0].custo}</Text>
+                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
                         </View>
                     </View>
                 </View>
@@ -74,22 +98,14 @@ export function ConsultaReceita() {
     const [receitaId, setReceitaId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = (receita) => {
-        setBaseId(receita);
+        setReceitaId(receita);
         setOpenModal(true);
     };
     
     async function consultarReceitas() {
         try {
-            const user = await new Promise((resolve, reject) => {
-                onAuthStateChanged(auth, (user) => {
-                    if (user) { 
-                        resolve(user);
-                    } else {
-                        reject(new Error("Usuário não autenticado"));
-                    }
-                });
-            });
-            const receitasSnapshot = await getDocs(collection(firestore, 'receitas'));
+            const user = auth.currentUser;
+            const receitasSnapshot = await getDocs(query(collection(firestore, 'receitas'), where('IDUsuario', '==', user.uid)));
             const receitasArray = [];
             receitasSnapshot.forEach((doc) => {
                 const receita = {
@@ -129,7 +145,7 @@ export function ConsultaReceita() {
                                 />
                             )}
                             />
-                        {/* <ModalMostraBase modalVisible={openModal} base={baseId} handleClose={() => setOpenModal(false)} /> */}
+                        <ModalMostraReceita modalVisible={openModal} receita={receitaId} handleClose={() => setOpenModal(false)} />
                     </animatable.View>
                     )
             }

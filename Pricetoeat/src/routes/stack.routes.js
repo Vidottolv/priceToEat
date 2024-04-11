@@ -9,6 +9,9 @@ import { Cadastros } from '../pages/home/cadastros';
 import { NomearReceita } from '../components/receita';
 import EditarProdutoScreen from '../pages/edicoes/editaProduto';
 import EditarReceitaScreen from '../pages/edicoes/editaReceita';
+import EditarBaseScreen from '../pages/edicoes/editaBase';
+import QtyProdutos from '../components/screens/qtyProdutoxReceita';
+import FirstSteps from '../components/FirstsSteps';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +75,13 @@ export function StackRoutes(){
             }}
             />
             <Stack.Screen
+            name="QtyProdutos"
+            component={QtyProdutos}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
             name="editaProduto"
             component={EditarProdutoScreen}
             options={{
@@ -79,8 +89,22 @@ export function StackRoutes(){
             }}
             />
             <Stack.Screen
+            name="editaBase"
+            component={EditarBaseScreen}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
             name="editaReceita"
             component={EditarReceitaScreen}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
+            name="firstSteps"
+            component={FirstSteps}
             options={{
                 headerShown:false,
             }}

@@ -5,13 +5,9 @@ import * as animatable from 'react-native-animatable'
 import  { RadioButtonItem, RadioButtonGroup } from 'expo-radio-button';
 import NumericInput from 'react-native-numeric-input'
 import { firestore, auth } from '../../../controller';
-import {onAuthStateChanged} from 'firebase/auth';
 import { collection, addDoc } from "firebase/firestore"; 
 import { useNavigation } from '@react-navigation/native';
 import { showMessage, hideMessage } from 'react-native-flash-message';
-
-
-
 
 export default function CadastroReceita(){
     const [nomeProduto, setNomeProduto] = useState('');
@@ -23,7 +19,7 @@ export default function CadastroReceita(){
         showMessage({
             backgroundColor:'#0bbd29',
             message: 'Sucesso no cadastro!',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info', 
         });
     }
     const flashMessageErro = () => {
@@ -36,8 +32,8 @@ export default function CadastroReceita(){
 
     async function cadastraProduto() {
         if (nomeProduto != '' && precoProduto != null && tamProdBruto != null) {
-            const usuario = onAuthStateChanged(auth, (user) => {
-                if (user) {
+            const user = auth.currentUser;
+            if (user) {
                     const uid = user.uid;
                     const docRef = addDoc(collection(firestore, 'produtos'), {
                         Nome: nomeProduto,
@@ -51,8 +47,6 @@ export default function CadastroReceita(){
                 }
                 flashMessageSucesso();
             }
-            )
-        }
         flashMessageErro();
     }
 

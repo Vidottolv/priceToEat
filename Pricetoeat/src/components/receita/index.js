@@ -2,18 +2,17 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../controller';
+import { auth, firestore } from '../../controller';
 import { useGlobalContext } from '../context/produtoContext';
 import { useFonts } from 'expo-font';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useReceitasData } from '../hooks/useReceitasData';
+import { addDoc, collection, getDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
 
 export function NomearReceita({ route }) {
   const { produto, base } = route.params;
-  const { AddToReceitaArray } = useGlobalContext(); 
-  const { removeItemFromReceitaArray } = useGlobalContext();
-  const { cadastrarReceita, atualizarReceita, data: receitasData } = useReceitasData();
+  const { AddToReceitaArray, removeItemFromReceitaArray, cleanReceitaArray } = useGlobalContext();
+  const { data:receitasData } = useReceitasData();
   const [nomeReceita, setNomeReceita] = useState('');
   const [value, setValue] = useState(null);
   const [placeholderText, setPlaceholderText] = useState('Já existente');
@@ -33,34 +32,103 @@ export function NomearReceita({ route }) {
 
   if (!loaded) { return null; }
 
-  const handleReceitaChange = async (idReceita) => {
-    try {
-      if (idReceita) {
-        const receitaSelecionada = receitasData.find(receita => receita.value === idReceita);
-        if (receitaSelecionada) {
-          let detalhesAtualizados = receitaSelecionada.detalhes || ''; 
-          if (produto) {
-            detalhesAtualizados += {produto}; 
-          }
-          if (base) {
-            detalhesAtualizados += {base};
-          }
-          const novaReceita = {
-            ...receitaSelecionada,
-            Detalhes: detalhesAtualizados
-          };
-          await atualizarReceita(idReceita, novaReceita);
-          setData(prevData => prevData.map(item => item.id === idReceita ? novaReceita : item));
-        }
-      } else {
-        console.error('Nenhuma receita selecionada.');
+  async function criaReceita() {
+    if (nomeReceita != '') {
+      try {
+        const user = auth.currentUser;
+        if(user) {
+          const receitaRef = collection(firestore, 'receitas');
+          const snapshot = await getDocs(receitaRef);
+          const qtyReceitas = snapshot.size + 1;
+
+          let custoReceita = 0;
+          listaCustos = [];
+            
+            if(base) {
+              listaCustos.push(...base.ProdutosBase);
+              console.log(listaCustos)
+            }
+            for (let i = 0; i < listaCustos.length; i++) {
+              if (listaCustos[i].custo == 0) {
+                listaCustos[i].custo = listaCustos[i].quantidade * listaCustos[i].Preco;
+              }
+              custoReceita += listaCustos[i].custo;
+            }
+            if(produto) {
+              const TratarProduto = {
+                custo: 0,
+                preco: parseInt(produto.Preco,10),
+                produto: produto.Nome,
+                quantidade: 0,
+                tamanhoEmbalagem: parseInt(produto.TamanhoEmbalagem,10),
+                unidadeDeMedida: parseInt(produto.UnidadeDeMedida,10),
+              }
+              listaCustos.push(TratarProduto); 
+            }
+            const novaReceita = {
+              nomeReceita: nomeReceita,
+              IDReceita: qtyReceitas,
+              IDUsuario: user.uid,
+              custoReceita: custoReceita,
+              ProdutosReceita: listaCustos
+            };
+            await addDoc(receitaRef, novaReceita); 
+            if(produto) {
+              const nomeproduto = produto.Nome;
+              const tamanhoProduto = produto.tamanhoEmbalagem;
+              const precoproduto = produto.preco;
+              const unidadeproduto = produto.unidadeDeMedida;
+              console.log(nomeReceita, produto)
+              navigation.navigate('QtyProdutos', { receita: nomeReceita, nome: nomeproduto, tamanho: tamanhoProduto, custoprod: precoproduto, unidadeprod: unidadeproduto,idReceita: qtyReceitas });
+            }
+            else{
+              setTimeout( () => navigation.navigate('home'), duration = 1000)   
+            }
+          }            
+      } catch (error) {
+        console.error('erro', error);
       }
-      navigation.goBack();
-    } catch (error) {
-      console.error('erro', error);
     }
-  };
-  
+  }
+
+  async function atualizaReceita(idReceita) { 
+    try{
+      console.log(idReceita)
+      const receitaDocument = doc(firestore,'receitas', idReceita)
+      const receitaSnap = await getDoc(receitaDocument);
+      const receitaData = receitaSnap.data();
+      listaCustos = [...(receitaData.ProdutosReceita || [])];
+      custoReceita = receitaData.custoReceita;
+
+      if(produto) {
+        const TratarProduto = {
+          Nome: produto.Nome,
+          Preco: parseInt(produto.Preco,10),
+          custo: 0,
+          quantidade: 0,
+          TamanhoEmbalagem: parseInt(produto.TamanhoEmbalagem,10),
+          UnidadeDeMedida: parseInt(produto.UnidadeDeMedida,10),
+          IDProduto: produto.IDProduto
+        }
+        listaCustos.push(TratarProduto); 
+      }
+      if(base) {
+        listaCustos.push(...base.ProdutosBase);
+      }
+      custoReceita = listaCustos.reduce((total, produto) => {
+        return total + (produto.custo * produto.quantidade);
+      }, 0);
+
+      await updateDoc(receitaDocument,{
+        ProdutosReceita: listaCustos,
+        custoReceita: custoReceita
+      });
+      console.log("Receita atualizada com sucesso!");  
+    }
+    catch(error) {
+      console.error("Erro ao atualizar receita: ", error);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -76,8 +144,7 @@ export function NomearReceita({ route }) {
       <View style={styles.botoes}>
         <TouchableOpacity 
           onPress={() => {
-            cadastrarReceita(nomeReceita);
-            navigation.goBack();
+            criaReceita();
           }}
           style={styles.button}>
           <Text style={styles.textButton}>Nova Receita</Text>
@@ -92,12 +159,11 @@ export function NomearReceita({ route }) {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={placeholderText}
+          placeholder={"Já existente"}
           value={value}
-          onChange={item => {
+          onChange={(item) => {
             setValue(item.value);
-            setPlaceholderText(item.label);
-            handleReceitaChange(item.value);
+            atualizaReceita(item.value);
           }}
         />
       </View>
@@ -152,20 +218,23 @@ const styles = StyleSheet.create({
     marginTop:'15%'
   },
   textButton: {
-    color: '#FFF',
+    color: '#000',
     fontSize: 16,
     fontFamily:'Quicksand-Bold',
   },
   button: {
-    marginTop:20,
-    borderWidth: 2,
-    borderRadius: 25,
-    height: 40,
-    width: '35%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:'#000'
-  },
+    height: 40,
+    width: '35%',
+    marginTop: 10,
+    marginBottom: 6,
+    padding: 4,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: '#99BC85',
+    backgroundColor: '#D4E7C5'
+},
   textinput:{
     color:'#515151',
     borderBottomWidth:1,
@@ -176,7 +245,7 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
-    color:'#FFF',
+    color:'#000',
     fontFamily:'Quicksand-Bold',
     textAlign:'center',
   },

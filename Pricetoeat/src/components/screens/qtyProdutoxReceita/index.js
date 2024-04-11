@@ -1,68 +1,65 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import * as animatable from 'react-native-animatable'
-import { Ionicons } from '@expo/vector-icons';
-import { firestore } from '../../../controller';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
+import { firestore, auth } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
 
-export default function EditarProdutoScreen({ route, navigation }) {
-  const [editedProduto, setEditedProduto] = useState(route.params.produto);
-  const cancelEdit = () => { navigation.goBack(); };
+export default function QtyProdutos({ route, navigation }) {
+    const { receita, nome, tamanho, custoprod, unidadeprod, idReceita} = route.params;
+    const [quantidadeProduto, setQuantidadeProduto] = useState(''); 
+    const cancelEdit = () => { navigation.goBack(); };
 
   const saveEdit = async () => {
-    try {
-        const produtoRef = doc(firestore, 'produtos', editedProduto.id);
+    if (quantidadeProduto != 0) {
+        try {
+          const usuario = auth.currentUser;
+            if(user) {
+        const receitaRef = doc(firestore, 'receitas', idReceita);
+        let custoQuant = 0;
+            if (unidadeprod == 5) {
+              custoQuant = custoprod * parseInt(quantidadeProduto);
+            } else {
+              custoQuant = (custoprod / tamanho) * parseInt(quantidadeProduto);
+            }
         const docData = {
-            Nome: editedProduto?.Nome,
-            Preco: parseInt(editedProduto?.Preco), 
-        }
-        await updateDoc(produtoRef, docData);
+                quantidade: parseInt(quantidadeProduto),
+                custo: custoQuant
+            };
+        await updateDoc(receitaRef, docData);
         console.log('Produto atualizado com sucesso!');
         navigation.navigate('home');
+        }
     } catch (error) {
       console.error('Erro ao atualizar o produto:',error);
     }
-  };
+  }
+}
 
-  return (
-   <View style={styles.container}>
-    <animatable.View animation={'fadeInRight'} style={{width:'100%'}}>
-        <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>Editar Produto</Text>
-                <TouchableOpacity style={styles.backButton} onPress={() => cancelEdit()}>
-                    <Ionicons
-                        size={30}
-                        color={'#99BC85'}
-                        name='home'/>
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={[styles.title, styles.underline]}>Editar Produto</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 </TouchableOpacity>
             </View>
-        <View style={styles.compound}>
-            <Text style={styles.subtitle}>Nome do produto</Text>
+            <View style={styles.compound}>
+            <Text style={styles.subtitle}>Nome da Receita: {receita}</Text>
+            <Text style={styles.subtitle}>Nome do Produto: {nome}</Text>
             <TextInput
-                value={editedProduto.Nome}
-                onChangeText={(text) => setEditedProduto({ ...editedProduto, Nome: text })}
-                placeholder="Nome"
-                style={styles.input}/>
-            <Text style={styles.subtitle}>Preço do produto</Text>
-            <TextInput
-                value={editedProduto.Preco}
-                onChangeText={(text) => {
-                    const numericValue = text.replace(/[^0-9]/g, '');
-                    setEditedProduto({ ...editedProduto, Preco: numericValue });
-                }}
-                placeholder="Preço"
+                value={quantidadeProduto.toString()}
+                onChangeText={text => setQuantidadeProduto(parseInt(text) || 0)}
+                placeholder="Quantidade do Produto"
                 keyboardType="numeric"
                 style={styles.input}/>
-                <TouchableOpacity 
-                    style={styles.buttonCadastrar}
-                    onPress={saveEdit}>
-                    <Text style={styles.textButton}>Salvar</Text>
-                </TouchableOpacity>
+            <TouchableOpacity 
+                style={styles.buttonCadastrar}
+                onPress={saveEdit}>
+                <Text style={styles.textButton}>Salvar</Text>
+            </TouchableOpacity>
         </View>
-    </animatable.View>
     </View>
-  )
-};
+    );
+}
+
 
 const styles = StyleSheet.create({
     container: {
@@ -98,9 +95,10 @@ const styles = StyleSheet.create({
             height: 2
         },
         fontFamily: 'Quicksand-Regular',
-        color: '#99BC85',
+        color: '#000',
         marginBottom: '1%',
         borderColor: '#000',
+        marginBottom:'4%'
     },
     input: {
         color: '#000',

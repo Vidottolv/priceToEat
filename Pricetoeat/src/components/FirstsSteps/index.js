@@ -1,70 +1,46 @@
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
 
-export function ModalMostraBase({ modalVisible, base, handleClose }) {
 
+export default function FirstSteps (){
   const [loaded] = useFonts({
-    'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
-    'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
-    'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
-    'Quicksand-Var': require('../../../assets/fonts/Quicksand-VariableFont_wght.ttf'),
+    'Quicksand-Regular': require('../../assets/fonts/Quicksand-Regular.ttf'),
+    'Quicksand-Bold': require('../../assets/fonts/Quicksand-Bold.ttf'),
+    'Quicksand-Medium': require('../../assets/fonts/Quicksand-Medium.ttf'),
+    'Quicksand-Var': require('../../assets/fonts/Quicksand-VariableFont_wght.ttf'),
   });
   if (!loaded) {
     return null;
   }
-  const renderizarComponentes = () => {
-    if (!base?.ProdutosBase || base?.ProdutosBase.length === 0) {
-      return <Text>Nenhum custo encontrado.</Text>;
-    }
-    let unidade = '';
-  
-    const componentes = base?.ProdutosBase.map((custo, index) => (  
-    <View key={index}>
-        <Text style={styles.titleProduto}>{custo?.produto}</Text>
-        <Text style={styles.textProduto}>-Preço - R${custo?.preco}</Text>
-        <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade}</Text>
-        <Text style={styles.textProduto}>-Custo - R${custo?.custo}</Text>
-      </View>
-    ));
-
-    return componentes;
-  };
-
   const navigation = useNavigation();
+
   return (
     <Modal
       animationType="slide"
-      transparent={true}
-      visible={modalVisible}>
+      transparent={true}>
       <View style={styles.container}>
         <View style={styles.content}>
           <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>{base?.NomeBase}</Text>
+            {/* <Text style={[styles.title, styles.underline]}></Text> */}
             <TouchableOpacity
-              style={styles.backButton}
-              onPress={handleClose}>
-              <Ionicons name='close-circle-outline' size={30} color={'#000'} />
+              style={styles.backButton}>
             </TouchableOpacity>
           </View>
           <View style={styles.body}>
             <Text style={styles.text}>
-              Custo da Base: R${base?.custoBase}
+              Custo da Base: R$
             </Text>
-            {renderizarComponentes()}
           </View>
         </View>
         <View style={styles.bottom}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('nomearReceita', { base: base })}
+          onPress={() => navigation.goBack()}
             style={styles.botaoReceita}>
             <Text style={[styles.textoReceita, styles.underline]}>Add numa receita</Text>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={() => navigation.navigate('editaBase', { base: base })}
             style={styles.botaoReceita}>
               <Text style={[styles.textoReceita,styles.underline]}>Editar quantidades</Text>              
             </TouchableOpacity>
@@ -76,6 +52,7 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'rgba(24,24,24,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1
@@ -83,7 +60,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#D4E7C5',
     height: '70%',
-    width: '90%',
+    width: '80%',
     borderRadius: 22,
     borderWidth: 4,
     borderColor: '#99BC85',

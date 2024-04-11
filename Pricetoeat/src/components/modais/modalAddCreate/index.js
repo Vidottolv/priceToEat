@@ -2,8 +2,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../../controller';
 import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
 
@@ -18,19 +16,6 @@ export function ModalAddCreate() {
     if (!loaded) {
       return null;
     }
-
-    // async function addProdutoArray(produto) {
-    //   onAuthStateChanged(auth, async (user) => {
-    //     if (user) {
-    //       try {
-    //         addToGlobalArray(produto);
-    //         handleClose();
-    //       } catch (error) {
-    //         console.error('erro', error);
-    //       }
-    //     }
-    //   });
-    // }
   
     const navigation = useNavigation();
   

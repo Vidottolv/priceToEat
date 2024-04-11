@@ -3,8 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, query, where } from "firebase/firestore";
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -53,11 +52,11 @@ function BaseItem({ base, onPressItem }) {
                     {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
                 </View>
                 <View style={styles.textos}>
-                    <Text style={[styles.subtitle, styles.underline]}>{base.Nome}</Text>
+                    <Text style={[styles.subtitle, styles.underline]}>{base.NomeBase}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
                             <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
-                            <Text style={styles.textCompound}>{base.listaCustos[0].produto} - Custo: R${base.listaCustos[0].custo}</Text>
+                            <Text style={styles.textCompound}>{base.ProdutosBase[0].produto} - Custo: R${base.ProdutosBase[0].custo}</Text>
                             <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
                         </View>
                     </View>
@@ -80,17 +79,9 @@ export function ConsultaBase() {
     
     async function consultarBases() {
         try {
-            const user = await new Promise((resolve, reject) => {
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        resolve(user);
-                    } else {
-                        reject(new Error("Usuário não autenticado"));
-                    }
-                });
-            });
-    
-            const basesSnapshot = await getDocs(collection(firestore, 'bases'));
+            const user = auth.currentUser;
+
+            const basesSnapshot = await getDocs(query(collection(firestore, 'bases'), where('IDUsuario', '==', user.uid)));
             const basesArray = [];
             basesSnapshot.forEach((doc) => {
                 const base = {

@@ -3,7 +3,6 @@ import {Ionicons} from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import {onAuthStateChanged} from 'firebase/auth';
 import { collection, getDocs} from "firebase/firestore"; 
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
@@ -61,7 +60,7 @@ export function CadastroBase(){
     const [produtos, setProdutos] = useState([]);
     const navigation = useNavigation();
      async function consultarProdutos() {
-        onAuthStateChanged(auth, async(user) => {
+        const user = auth.currentUser;
             if (user) {
                 try {
                     const querySnapshot = await getDocs(collection(firestore, 'produtos'));
@@ -78,7 +77,6 @@ export function CadastroBase(){
                     console.error('Erro ao consultar produtos:', error);
                   }
             }
-        })
      }
      useEffect(() => {
         consultarProdutos();

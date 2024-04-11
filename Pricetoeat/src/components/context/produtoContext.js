@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Firestore, addDoc, collection, getDocs } from 'firebase/firestore';
 import { auth, firestore } from '../../controller';
-import { onAuthStateChanged } from 'firebase/auth';
 
 const GlobalContext = createContext();
 
@@ -19,14 +18,14 @@ export const GlobalProvider = ({ children }) => {
   const AddToReceitaArray = (item) => {
     setReceitaArray((prevArray) => {
       const newArray = [...prevArray, item];
-      console.log(newArray);
+      // console.log(newArray);
       return newArray;
     });
   };  
 
   const cadastrarReceita = async (nome) => {
-    const usuario = onAuthStateChanged(auth, (user) => {
-      if(user) {
+    const usuario = auth.currentUser;
+      if(usuario) {
         try {
           const snapshot = getDocs(collection(firestore,'receitas')); 
           const docRef = addDoc(collection(firestore,'receitas'),{
@@ -42,7 +41,6 @@ export const GlobalProvider = ({ children }) => {
           console.error('Erro ao cadastrar a receita:', error);
         }
       }
-    })
   };
 
   const removeItemFromGlobalArray = (index) => {
@@ -51,6 +49,13 @@ export const GlobalProvider = ({ children }) => {
     setGlobalArray(newArray);
     // console.log(newArray)
   };
+
+  const cleanGlobalArray = () => {
+    setGlobalArray([]);
+  }
+  const cleanReceitaArray = () => {
+    setReceitaArray([]);
+  }
 
   const removeItemFromReceitaArray = (index) => {
     const newArray = [...receitaArray];
@@ -65,10 +70,11 @@ export const GlobalProvider = ({ children }) => {
         globalArray,
         addToGlobalArray,
         removeItemFromGlobalArray,
+        cleanGlobalArray,
         receitaArray,
         AddToReceitaArray,
         removeItemFromReceitaArray,
-        cadastrarReceita
+        cleanReceitaArray
       }}
     >
       {children}

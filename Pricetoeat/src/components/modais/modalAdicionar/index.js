@@ -2,7 +2,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../controller';
 import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
@@ -20,8 +19,8 @@ export function ModalAdicionar({ produto, handleClose }) {
     }
 
     async function addProdutoArray(produto) {
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
+      const user = auth.currentUser;
+      if (user) {
           try {
             addToGlobalArray(produto);
             handleClose();
@@ -29,7 +28,6 @@ export function ModalAdicionar({ produto, handleClose }) {
             console.error('erro', error);
           }
         }
-      });
     }
   
     const navigation = useNavigation();

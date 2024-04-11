@@ -8,13 +8,13 @@ export function useReceitasData() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
+    const user = auth.currentUser;
+    if (user) {
         try {
-          const receitasSnapshot = await getDocs(collection(firestore, 'receitas'));
+          const receitasSnapshot = getDocs(collection(firestore, 'receitas'));
           const receitasArray = receitasSnapshot.docs.map(doc => ({
             value: doc.id,
-            label: doc.data().Nome
+            label: doc.data().nomeReceita
           }));
           setData(receitasArray);
           setLoading(false);
@@ -27,22 +27,8 @@ export function useReceitasData() {
         setLoading(false);
         setError(new Error("Usuário não autenticado"));
       }
-    });
-
     return () => unsubscribe();
   }, []);
-
-  const atualizarReceita = async (idReceita, novoDado) => {
-    try {
-      console.log(idReceita);
-      console.log(novoDado);
-      const receitaRef = doc(firestore, 'receitas', idReceita);
-      await updateDoc(receitaRef, novoDado);
-      console.log('Receita atualizada com sucesso.');
-    } catch (error) {
-      console.error('Erro ao atualizar receita:', error);
-    }
-  };
-
-  return { data, loading, error, atualizarReceita };
+  
+  return { data, loading, error };
 }

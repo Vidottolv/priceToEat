@@ -2,10 +2,11 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { auth } from '../../../controller';
 import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
 
-export function ModalMostraBase({ modalVisible, base, handleClose }) {
+export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
 
   const [loaded] = useFonts({
     'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
@@ -17,13 +18,12 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
     return null;
   }
   const renderizarComponentes = () => {
-    if (!base?.ProdutosBase || base?.ProdutosBase.length === 0) {
+    if (!receita?.ProdutosReceita || receita?.ProdutosReceita.length === 0) {
       return <Text>Nenhum custo encontrado.</Text>;
     }
-    let unidade = '';
-  
-    const componentes = base?.ProdutosBase.map((custo, index) => (  
-    <View key={index}>
+
+    const componentes = receita?.ProdutosReceita.map((custo, index) => (
+      <View key={index}>
         <Text style={styles.titleProduto}>{custo?.produto}</Text>
         <Text style={styles.textProduto}>-Preço - R${custo?.preco}</Text>
         <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade}</Text>
@@ -43,7 +43,7 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
       <View style={styles.container}>
         <View style={styles.content}>
           <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>{base?.NomeBase}</Text>
+            <Text style={[styles.title, styles.underline]}>{receita?.NomeReceita}</Text>
             <TouchableOpacity
               style={styles.backButton}
               onPress={handleClose}>
@@ -52,19 +52,19 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
           </View>
           <View style={styles.body}>
             <Text style={styles.text}>
-              Custo da Base: R${base?.custoBase}
+              Custo da Receita: R${receita?.custoReceita}
             </Text>
             {renderizarComponentes()}
           </View>
         </View>
         <View style={styles.bottom}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('nomearReceita', { base: base })}
+            onPress={() => navigation.navigate('nomearReceita', { receita: receita })}
             style={styles.botaoReceita}>
             <Text style={[styles.textoReceita, styles.underline]}>Add numa receita</Text>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={() => navigation.navigate('editaBase', { base: base })}
+          onPress={() => navigation.navigate('editaReceita', { receita: receita })}
             style={styles.botaoReceita}>
               <Text style={[styles.textoReceita,styles.underline]}>Editar quantidades</Text>              
             </TouchableOpacity>

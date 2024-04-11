@@ -2,14 +2,13 @@
   import { Ionicons } from '@expo/vector-icons'
   import { useState, useEffect } from 'react';
   import { firestore, auth } from '../../../../controller';
-  import { onAuthStateChanged } from 'firebase/auth';
   import { useNavigation } from '@react-navigation/native';
   import { collection, addDoc, getDocs } from "firebase/firestore";
   import { useGlobalContext } from '../../../../components/context/produtoContext';
   import { useFonts } from 'expo-font';
 
   const ProdutosSelecionados = () => {
-    const { globalArray, removeItemFromGlobalArray } = useGlobalContext();
+    const { globalArray, cleanGlobalArray } = useGlobalContext();
     const navigation = useNavigation();
     const [nomeBase, setNomeBase] = useState('');
     const [quants, setQuants] = useState({});
@@ -30,10 +29,10 @@
 
     const renderItem = ({ item, index }) => {
       let unidade = '';
-      if (item.UnidadeMedida == '1') { unidade = 'kgs'; }
-      else if (item.UnidadeMedida == '2') { unidade = 'grs'; }
-      else if (item.UnidadeMedida == '3') { unidade = 'lts'; }
-      else if (item.UnidadeMedida == '4') { unidade = 'mls'; }
+      if (item.UnidadeDeMedida == '1') { unidade = 'kgs'; }
+      else if (item.UnidadeDeMedida == '2') { unidade = 'grs'; }
+      else if (item.UnidadeDeMedida == '3') { unidade = 'lts'; }
+      else if (item.UnidadeDeMedida == '4') { unidade = 'mls'; }
       else { unidade = 'unidade'; }
       return (
         <View>
@@ -58,38 +57,43 @@
     async function cadastraBase() {
       if (nomeBase != '') {
         try {
-          const usuario = onAuthStateChanged(auth, async (user) => {
+          const user = auth.currentUser;
             if (user) {
               const snapshot = await getDocs(collection(firestore, 'bases'));
               const qtyBases = snapshot.size + 1;
               let custoBase = 0;
+              let custoTratado = 0;
               listaCustos = [];
               for (let i = 0; i < globalArray.length; i++) {
-                const custo = quants[i] * globalArray[i].PrecoProd;
+                if(globalArray[i].unidade != 'unidade'){
+                  custoTratado = parseInt(globalArray[i].Preco,10) / parseInt(globalArray[i].TamanhoEmbalagem,10)
+                }
+                else {
+                  custoTratado = parseInt(globalArray[i].Preco,10);
+                }
+                const custo = quants[i] * custoTratado;
                 custoBase += custo;
                 listaCustos.push({
                   produto: globalArray[i].Nome,
-                  preco: globalArray[i].PrecoProd,
-                  quantidade: quants[i],
+                  preco: parseInt(globalArray[i].Preco,10),
+                  quantidade: parseInt(quants[i],10),
                   custo: custo,
-                  unidade: globalArray[i].UnidadeMedida
+                  unidadeDeMedida: globalArray[i].UnidadeDeMedida,
+                  tamanhoEmbalagem: globalArray[i].TamanhoEmbalagem
                 });
               }
               const docRef = await addDoc(collection(firestore, 'bases'), {
-                Nome: nomeBase,
                 IDUsuario: user.uid,
                 IDBase: qtyBases,
+                NomeBase: nomeBase,
                 custoBase: custoBase,
-                listaCustos: listaCustos
+                ProdutosBase: listaCustos
               });
               // console.log(docRef);
               setNomeBase('');
-              // for (let i = 0; i < globalArray.length; i++) {
-              //   removeItemFromGlobalArray('');
-              // }
+              cleanGlobalArray();
               setTimeout( () => navigation.navigate('home'), duration = 1000)
             }
-          });
         } catch (error) {
           // flashMessageErro();
         }
