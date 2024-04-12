@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -135,7 +135,8 @@ export function ConsultaProduto() {
                             <ProdutoItem 
                                 produto={ item }
                                 press={handleEdit}
-                                setNavigateToNomearReceita={ setNavigateToNomearReceita } />} />
+                                setNavigateToNomearReceita={ setNavigateToNomearReceita } />}
+                        scrollEnabled/>
                 </animatable.View>
             )}
         </SafeAreaView>

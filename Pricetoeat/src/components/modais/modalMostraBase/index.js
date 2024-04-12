@@ -23,11 +23,11 @@ export function ModalMostraBase({ modalVisible, base, handleClose }) {
     let unidade = '';
   
     const componentes = base?.ProdutosBase.map((custo, index) => (  
-    <View key={index}>
+      <View key={index}>
         <Text style={styles.titleProduto}>{custo?.produto}</Text>
-        <Text style={styles.textProduto}>-Preço - R${custo?.preco}</Text>
-        <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade}</Text>
-        <Text style={styles.textProduto}>-Custo - R${custo?.custo}</Text>
+        <Text style={styles.textProduto}>-Preço - R${custo?.preco.toFixed(2)}</Text>
+        <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade.toFixed(2)}</Text>
+        <Text style={styles.textProduto}>-Custo - R${custo?.custo.toFixed(2)}</Text>
       </View>
     ));
 

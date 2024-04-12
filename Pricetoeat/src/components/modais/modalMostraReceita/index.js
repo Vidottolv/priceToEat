@@ -76,6 +76,7 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'rgba(24,24,24,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#D4E7C5',
     height: '70%',
-    width: '90%',
+    width: '80%',
     borderRadius: 22,
     borderWidth: 4,
     borderColor: '#99BC85',

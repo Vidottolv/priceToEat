@@ -56,7 +56,7 @@ function BaseItem({ base, onPressItem }) {
                     <View style={styles.subContainerComponent}>
                         <View>
                             <Text style={styles.textCompound}>Custo da Base: R${base.custoBase}</Text>
-                            <Text style={styles.textCompound}>{base.ProdutosBase[0].produto} - Custo: R${base.ProdutosBase[0].custo}</Text>
+                            <Text style={styles.textCompound}>{base.ProdutosBase[0].produto} - Custo: R${base.ProdutosBase[0].custo.toFixed(2)}</Text>
                             <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
                         </View>
                     </View>

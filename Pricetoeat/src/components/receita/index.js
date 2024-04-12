@@ -73,17 +73,18 @@ export function NomearReceita({ route }) {
               ProdutosReceita: listaCustos
             };
             await addDoc(receitaRef, novaReceita); 
-            if(produto) {
-              const nomeproduto = produto.Nome;
-              const tamanhoProduto = produto.tamanhoEmbalagem;
-              const precoproduto = produto.preco;
-              const unidadeproduto = produto.unidadeDeMedida;
-              console.log(nomeReceita, produto)
-              navigation.navigate('QtyProdutos', { receita: nomeReceita, nome: nomeproduto, tamanho: tamanhoProduto, custoprod: precoproduto, unidadeprod: unidadeproduto,idReceita: qtyReceitas });
-            }
-            else{
-              setTimeout( () => navigation.navigate('home'), duration = 1000)   
-            }
+            setTimeout( () => navigation.navigate('home'), duration = 1000)
+            // if(produto) {
+            //   const nomeproduto = produto.Nome;
+            //   const tamanhoProduto = produto.tamanhoEmbalagem;
+            //   const precoproduto = produto.preco;
+            //   const unidadeproduto = produto.unidadeDeMedida;
+            //   console.log(nomeReceita, produto)
+            //   navigation.navigate('QtyProdutos', { receita: nomeReceita, nome: nomeproduto, tamanho: tamanhoProduto, custoprod: precoproduto, unidadeprod: unidadeproduto,idReceita: qtyReceitas });
+            // }
+            // else{
+            //   setTimeout( () => navigation.navigate('home'), duration = 1000)   
+            // }
           }            
       } catch (error) {
         console.error('erro', error);
@@ -144,7 +145,7 @@ export function NomearReceita({ route }) {
       <View style={styles.botoes}>
         <TouchableOpacity 
           onPress={() => {
-            criaReceita();
+            criaReceita()
           }}
           style={styles.button}>
           <Text style={styles.textButton}>Nova Receita</Text>

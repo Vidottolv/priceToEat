@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -30,8 +30,11 @@ export default function FirstSteps (){
           </View>
           <View style={styles.body}>
             <Text style={styles.text}>
-              Custo da Base: R$
+              1 - Exemplo de um cadastro de um produto
             </Text>
+            <View style={styles.image}>
+                    {/* <Image source={require('../../assets/exemploCadastroProduto.png')} /> */}
+                </View>
           </View>
         </View>
         <View style={styles.bottom}>
@@ -40,10 +43,10 @@ export default function FirstSteps (){
             style={styles.botaoReceita}>
             <Text style={[styles.textoReceita, styles.underline]}>Add numa receita</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.botaoReceita}>
               <Text style={[styles.textoReceita,styles.underline]}>Editar quantidades</Text>              
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
       </View>
     </Modal>
@@ -59,8 +62,8 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#D4E7C5',
-    height: '70%',
-    width: '80%',
+    height: '90%',
+    width: '90%',
     borderRadius: 22,
     borderWidth: 4,
     borderColor: '#99BC85',
