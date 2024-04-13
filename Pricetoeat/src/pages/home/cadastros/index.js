@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   },
   containerDeProdutos: {
     marginHorizontal: 'auto',
+    height:'100%'
   },
   title: {
     textAlign:'center',

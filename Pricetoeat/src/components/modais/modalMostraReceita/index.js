@@ -1,13 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../../../controller';
-import { useGlobalContext } from '../../context/produtoContext';
 import { useFonts } from 'expo-font';
 
 export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
-
   const [loaded] = useFonts({
     'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
     'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -21,20 +18,53 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
     if (!receita?.ProdutosReceita || receita?.ProdutosReceita.length === 0) {
       return <Text>Nenhum custo encontrado.</Text>;
     }
+    let unidade = '';
+    if (receita?.ProdutosReceita.unidadeDeMedida == '1') { unidade = 'Kgs' }
+    if (receita?.ProdutosReceita.unidadeDeMedida == '2') { unidade = 'Gramas' }
+    if (receita?.ProdutosReceita.unidadeDeMedida == '3') { unidade = 'Litros' }
+    if (receita?.ProdutosReceita.unidadeDeMedida == '4') { unidade = 'Mls' }
+    if (receita?.ProdutosReceita.unidadeDeMedida == '5') { unidade = 'Unidade' }
 
     const componentes = receita?.ProdutosReceita.map((custo, index) => (
       <View key={index}>
         <Text style={styles.titleProduto}>{custo?.produto}</Text>
         <Text style={styles.textProduto}>-Preço - R${custo?.preco}</Text>
-        <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade}</Text>
-        <Text style={styles.textProduto}>-Custo - R${custo?.custo}</Text>
+        <Text style={styles.textProduto}>-Qtd Usada - {custo?.quantidade} {unidade}</Text>
+        <Text style={styles.textProduto}>-Custo - R${custo?.custo.toFixed(2)}</Text>
       </View>
     ));
-
     return componentes;
   };
-
+  const renderizarBotoesNotNull = () => {
+    const custoZero = receita?.ProdutosReceita.some(custo => custo.custo === 0);
+    if (custoZero) {
+      return(
+        <TouchableOpacity
+          onPress={() => navigation.navigate('QtyProdutos', { receita: receita })}
+          style={styles.botaoReceita}>
+          <Text style={[styles.textoReceita, styles.underline]}>Cadastre as quantidades</Text>
+        </TouchableOpacity>
+      );
+    }
+    return null
+  };
+  const renderizarBotaoLucro = () => {
+    const lucroZero = receita?.lucroPercent === 0;
+    const custoZero = receita?.ProdutosReceita.some(custo => custo.custo === 0);
+    if (lucroZero) {
+      if(!custoZero){
+        return(
+          <TouchableOpacity
+            onPress={() => navigation.navigate('lucroReceita', { receita: receita })}
+            style={styles.botaoReceita}>
+            <Text style={[styles.textoReceita, styles.underline]}>Cadastre o Lucro</Text>
+          </TouchableOpacity>
+        );  
+      }
+    }
+  }
   const navigation = useNavigation();
+
   return (
     <Modal
       animationType="slide"
@@ -43,7 +73,7 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
       <View style={styles.container}>
         <View style={styles.content}>
           <View style={styles.headerModal}>
-            <Text style={[styles.title, styles.underline]}>{receita?.NomeReceita}</Text>
+            <Text style={[styles.title, styles.underline]}>{receita?.nomeReceita}</Text>
             <TouchableOpacity
               style={styles.backButton}
               onPress={handleClose}>
@@ -51,23 +81,23 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
             </TouchableOpacity>
           </View>
           <View style={styles.body}>
-            <Text style={styles.text}>
-              Custo da Receita: R${receita?.custoReceita}
-            </Text>
-            {renderizarComponentes()}
+            <View style={{height:'85%'}}>
+              <Text style={styles.text}>
+                - Custo da Receita: R${receita?.custoReceita}
+              </Text>
+              <Text style={styles.text}>
+                - Preço de Venda: R${receita?.custoReceita * (1 + (receita?.lucroPercent / 100))}               
+              </Text>
+              <Text style={styles.text}>
+                - Lucro: {receita?.lucroPercent}%
+              </Text>
+              {renderizarComponentes()}
+            </View>
+            <View>
+              {renderizarBotoesNotNull()}
+              {renderizarBotaoLucro()}
+            </View>
           </View>
-        </View>
-        <View style={styles.bottom}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('nomearReceita', { receita: receita })}
-            style={styles.botaoReceita}>
-            <Text style={[styles.textoReceita, styles.underline]}>Add numa receita</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-          onPress={() => navigation.navigate('editaReceita', { receita: receita })}
-            style={styles.botaoReceita}>
-              <Text style={[styles.textoReceita,styles.underline]}>Editar quantidades</Text>              
-            </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -117,15 +147,13 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     position: 'absolute',
-    bottom: 150,
-    width: '100%',
     alignItems: 'center',
     justifyContent:'center',
     columnGap:10
   },
   text: {
     color: '#000',
-    fontSize: 20,
+    fontSize: 18,
     marginLeft: '7%',
     fontFamily: 'Quicksand-Bold',
   },
@@ -146,11 +174,11 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline'
   },
   botaoReceita: {
-    marginTop: '92%',
+    marginLeft:'6.5%',
     justifyContent: 'center',
     alignItems: 'center',
     height: 45,
-    width: '35%',
+    width: '100%',
     padding: 4,
     borderRadius: 40,
     backgroundColor: '#99BC85'

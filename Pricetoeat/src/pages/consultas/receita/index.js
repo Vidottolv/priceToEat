@@ -39,10 +39,9 @@ function ReceitaItem({ receita, onPressItem }) {
             console.log('excluído');
             flashMessageSucesso();
         } catch (error) {
-            console.error('erro ao excluir a receita', error);
+            console.error('erro ao excluir a base', error);
             flashMessageErro();
-        }
-    }
+        }} 
     const verificarValoresNulos = () => {
         for (const produto of receita.ProdutosReceita) {
             if (produto.quantidade == 0 || produto.custo == 0) {
@@ -51,38 +50,52 @@ function ReceitaItem({ receita, onPressItem }) {
         }
         return false;
     };
-    const showFlashMsg = () => {
-        setTimeout(() => {
-            showMessage({
-                message: 'Existem valores nulos, atualize-os!',
-                type: 'warning',
-            });
-        }, 2000);
-    };
+    // const showFlashMsg = () => {
+    //     setTimeout(() => {
+    //         showMessage({
+    //             message: 'Existem valores nulos, atualize-os!',
+    //             type: 'warning',
+    //         });
+    //     }, 2000);
+    // };
+    const mensagem = () => {
+        if(receita.lucroPercent == 0) {
+            return ( <Text style={styles.textVerMais}>Clique para cadastrar o Lucro.</Text> );
+        }
+        if(receita.custoReceita == 0) {
+            return ( <Text style={styles.textVerMais}>Há produtos sem Qtd. Clique para cadastrar.</Text> )
+        }
+        else {
+            return( <Text style={styles.textVerMais}>Clique para ver a receita completa.</Text> );    
+        }
+    }
     const handlePressItem = () => {
         if (verificarValoresNulos()) {
             onPressItem(receita);
-            showFlashMsg();
+            // showFlashMsg();
         } else {
             onPressItem(receita);
         }
     };
+    let lucro = 1 + (receita?.lucroPercent / 100);
+    let preco = receita?.custoReceita * lucro; 
 
     return (
         <TouchableOpacity
             style={styles.buttonBase}
+            onLongPress={deletar}
             onPress={handlePressItem}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
-                    {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
                 </View>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{receita?.nomeReceita}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            <Text style={styles.textCompound}>Custo da Receita: R${receita?.custoReceita}</Text>
-                            <Text style={styles.textCompound}>{receita?.ProdutosReceita[0].Nome} - Custo: R${receita?.ProdutosReceita[0].custo}</Text>
-                            <Text style={styles.textVerMais}>Clique para ver a base completa.</Text>
+                            <Text style={styles.textCompound}>Custo: R${receita?.custoReceita}</Text>
+                            <Text style={styles.textCompound}>Preço de Venda: R${preco}</Text>
+                            <Text style={styles.textCompound}>Percentual de Lucro: {receita?.lucroPercent}%</Text>
+                            {mensagem()}
                         </View>
                     </View>
                 </View>
@@ -197,7 +210,7 @@ const styles = StyleSheet.create({
     },
     image: {
         backgroundColor: '#99BC85',
-        height: 120,
+        height: '100%',
         width: '30%',
         borderRadius: 10,
         borderTopRightRadius: 70,

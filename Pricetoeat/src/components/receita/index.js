@@ -70,10 +70,11 @@ export function NomearReceita({ route }) {
               IDReceita: qtyReceitas,
               IDUsuario: user.uid,
               custoReceita: custoReceita,
+              lucroPercent:0,
               ProdutosReceita: listaCustos
             };
             await addDoc(receitaRef, novaReceita); 
-            setTimeout( () => navigation.navigate('home'), duration = 1000)
+            navigation.navigate('home')
             // if(produto) {
             //   const nomeproduto = produto.Nome;
             //   const tamanhoProduto = produto.tamanhoEmbalagem;
@@ -103,13 +104,13 @@ export function NomearReceita({ route }) {
 
       if(produto) {
         const TratarProduto = {
-          Nome: produto.Nome,
-          Preco: parseInt(produto.Preco,10),
+          produto: produto.Nome,
+          preco: parseInt(produto.Preco,10),
           custo: 0,
           quantidade: 0,
-          TamanhoEmbalagem: parseInt(produto.TamanhoEmbalagem,10),
-          UnidadeDeMedida: parseInt(produto.UnidadeDeMedida,10),
-          IDProduto: produto.IDProduto
+          tamanhoEmbalagem: parseInt(produto.TamanhoEmbalagem,10),
+          unidadeDeMedida: parseInt(produto.UnidadeDeMedida,10),
+          // IDProduto: produto.IDProduto
         }
         listaCustos.push(TratarProduto); 
       }

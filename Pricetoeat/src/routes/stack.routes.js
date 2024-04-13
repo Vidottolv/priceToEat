@@ -10,8 +10,9 @@ import { NomearReceita } from '../components/receita';
 import EditarProdutoScreen from '../pages/edicoes/editaProduto';
 import EditarReceitaScreen from '../pages/edicoes/editaReceita';
 import EditarBaseScreen from '../pages/edicoes/editaBase';
-import QtyProdutos from '../components/screens/qtyProdutoxReceita';
+import QtyProdutos from '../components/screens/qtyProduto';
 import FirstSteps from '../components/FirstsSteps';
+import LucroReceita from '../components/screens/lucro';
 
 const Stack = createNativeStackNavigator();
 
@@ -105,6 +106,13 @@ export function StackRoutes(){
             <Stack.Screen
             name="firstSteps"
             component={FirstSteps}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
+            name="lucroReceita"
+            component={LucroReceita}
             options={{
                 headerShown:false,
             }}

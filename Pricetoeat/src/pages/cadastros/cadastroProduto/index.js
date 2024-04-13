@@ -38,7 +38,7 @@ export default function CadastroProduto() {
         precision: 2,
     })
     const commonMask = createNumberMask({
-        prefix: ['U', 'n', ' '],
+        prefix: ['', '', ' '],
         demiliter: '.',
         separator: ',',
         precision: 2
@@ -70,6 +70,7 @@ export default function CadastroProduto() {
                         // console.log(docRef);
                         setNomeProduto('');
                         flashMessageSucesso();
+                        navigation.goBack();
                     }
             } catch (error) { flashMessageErro(); }
         } else { flashMessageErro(); }

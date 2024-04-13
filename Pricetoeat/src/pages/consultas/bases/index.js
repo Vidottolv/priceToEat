@@ -22,14 +22,14 @@ function BaseItem({ base, onPressItem }) {
     const flashMessageSucesso = () => {
         showMessage({
             message: 'Item Excluído.',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger',
+            type: 'info',
             backgroundColor: '#0bbd29'
         });
     };
     const flashMessageErro = () => {
         showMessage({
             message: 'Erro ao excluir item',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info', 
         });
     };
     const deletar = async () => {
@@ -39,13 +39,13 @@ function BaseItem({ base, onPressItem }) {
             console.log('excluído');
             flashMessageSucesso();
         } catch (error) {
-            console.error('erro ao excluir o produto', error);
+            console.error('erro ao excluir a base', error);
             flashMessageErro();
-        }
-    }
+        }}     
     return (
         <TouchableOpacity
             style={styles.buttonBase}
+            onLongPress={deletar}
             onPress={() => onPressItem(base)}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
@@ -121,8 +121,10 @@ export function ConsultaBase() {
                                 />
                             )}
                             />
-                        {/* Use o componente ModalMostraBase com a letra maiúscula correta */}
-                        <ModalMostraBase modalVisible={openModal} base={baseId} handleClose={() => setOpenModal(false)} />
+                        <ModalMostraBase 
+                            modalVisible={openModal} 
+                            base={baseId} 
+                            handleClose={() => setOpenModal(false)}/>
                     </animatable.View>
                     )
             }

@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
         marginBottom:'2%'
     },
     flat:{
+        height:'100',
         marginTop:'5%',
         padding:10
     },

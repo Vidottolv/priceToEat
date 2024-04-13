@@ -41,11 +41,12 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
             flashMessageErro();
         }}         
     let unidade = '';
-    if (produto?.UnidadeDeMedida == '1') { unidade = 'kilo'; }
-    else if (produto?.UnidadeDeMedida == '2') { unidade = 'grama'; }
-    else if (produto?.UnidadeDeMedida == '3') { unidade = 'litro'; }
-    else if (produto?.UnidadeDeMedida == '4') { unidade = 'ml'; }
-    else { unidade = 'unid'; }
+    let custo = 0;
+    if (produto?.UnidadeDeMedida == '1') { unidade = 'kilo'; custo = produto?.Preco; }
+    else if (produto?.UnidadeDeMedida == '2') { unidade = 'grama'; custo = produto?.Preco / produto?.TamanhoEmbalagem }
+    else if (produto?.UnidadeDeMedida == '3') { unidade = 'litro';  custo = produto?.Preco / produto?.TamanhoEmbalagem }
+    else if (produto?.UnidadeDeMedida == '4') { unidade = 'ml';  custo = produto?.Preco / produto?.TamanhoEmbalagem }
+    else { unidade = 'unid'; custo = produto?.Preco / produto?.TamanhoEmbalagem;}
     return (
         <TouchableOpacity
             style={styles.buttonProduto}
@@ -60,7 +61,7 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
                     <Text style={[styles.subtitle, styles.underline]}>{produto?.Nome}</Text>
                     <View style={styles.subContainerComponent}>
                         <View>
-                            <Text style={styles.textCompound}>R${produto?.Preco} por {unidade}</Text>
+                            <Text style={styles.textCompound}>R${custo.toFixed(2)} por {unidade}</Text>
                             <Text style={styles.textCompound}>ID: {produto?.IDProduto}</Text>
                         </View>
                         <View>
@@ -148,6 +149,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         alignItems: 'center',
         justifyContent: 'flex-end',
+        height:'100%'
         // marginRight:'15%',
     },
     content: {
@@ -230,7 +232,8 @@ const styles = StyleSheet.create({
         // marginTop:'2%'
     },
     flat: {
-        marginTop: '5%'
+        marginTop: '5%',
+        height:'100%'
     },
     observation: {
         color: '#000',
