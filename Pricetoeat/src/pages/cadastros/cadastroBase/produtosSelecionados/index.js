@@ -1,11 +1,12 @@
-  import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, TextInput } from 'react-native';
-  import { Ionicons } from '@expo/vector-icons'
-  import { useState, useEffect } from 'react';
-  import { firestore, auth } from '../../../../controller';
-  import { useNavigation } from '@react-navigation/native';
-  import { collection, addDoc, getDocs } from "firebase/firestore";
-  import { useGlobalContext } from '../../../../components/context/produtoContext';
-  import { useFonts } from 'expo-font';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, TextInput } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
+import { useState, useEffect } from 'react';
+import { firestore, auth } from '../../../../controller';
+import { useNavigation } from '@react-navigation/native';
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { useGlobalContext } from '../../../../components/context/produtoContext';
+import { useFonts } from 'expo-font';
+  
 
   const ProdutosSelecionados = () => {
     const { globalArray, cleanGlobalArray } = useGlobalContext();
@@ -45,7 +46,7 @@
           </TouchableOpacity>
           <TextInput
             placeholder="Digite a Qtd usada"
-            placeholderTextColor={'#000'}
+            placeholderTextColor={'#99BC85'}
             value={quants[index]}
             onChangeText={(text) => onChangeText(index, text)}
             style={styles.input} />
@@ -107,15 +108,9 @@
         <View style={styles.content}>
           <View style={styles.headerModal}>
             <Text style={[styles.title, styles.underline]}>Produtos Selecionados</Text>
-            {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('home')}>
-              <Ionicons
-                size={30}
-                color={'#FFF'}
-                name='home' />
-            </TouchableOpacity> */}
           </View>
           <View style={styles.body}>
-          <Text style={styles.observation}>Segure apertado o nome do produto para excluir ele da base.</Text>
+          {/* <Text style={styles.observation}>Segure apertado o nome do produto para excluir ele da base.</Text> */}
           <Text style={styles.subtitle}> Nome da base:</Text>
           <TextInput
             value={nomeBase}
@@ -166,12 +161,6 @@
       color: '#99BC85',
       marginLeft: '3%',
       marginTop: '7%',
-      textShadowRadius: 4,
-      textShadowColor: '#BFD8AF',
-      textShadowOffset: {
-        width: 4,
-        height: 2
-      }
     },
     subtitle:{
       fontSize:20,
@@ -179,23 +168,11 @@
       color:'#000',
       marginTop:'2%',
       color:'#99BC85',
-      textShadowRadius: 4,
-      textShadowColor: '#BFD8AF',
-      textShadowOffset: {
-        width: 4,
-        height: 2
-      }
     },
     subtitleFlat: {
       fontSize: 17,
       fontFamily: 'Quicksand-Regular',
-      color: '#000',
-      textShadowRadius: 6,
-      textShadowColor: '#000',
-      textShadowOffset: {
-        width: 1,
-        height: 1
-      }
+      color: '#99BC85',
     },
     textCompound:{
       fontSize:14,
@@ -206,7 +183,7 @@
         justifyContent: 'center',
         alignSelf: 'center',
         height: 45,
-        width: '90%',
+        width: '100%',
         marginTop: 30,
         marginBottom: 15,
         padding: 4,
@@ -216,12 +193,6 @@
         backgroundColor: '#D4E7C5'
     },
     buttonText: {
-      textShadowRadius: 7,
-      textShadowColor: '#000',
-      textShadowOffset: {
-        width: 1,
-        height: 1
-      },
       fontFamily: 'Quicksand-Bold',
       textAlign:'center',
       fontSize: 16,
@@ -233,11 +204,10 @@
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
-      // marginTop: '8%',
       borderBottomWidth: 3,
       borderColor: '#99BC85',
       backgroundColor: '#D4E7C5',
-      height: '12%'
+      height: 130
     },
     underline: {
       textDecorationLine: 'underline'
@@ -247,7 +217,6 @@
       borderRadius:30,
       marginBottom:'2%',
       borderColor:'#000',
-      // width:'95%'
   },
     viewProduto: {
       marginLeft: '8%',

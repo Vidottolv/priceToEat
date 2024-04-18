@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
@@ -49,7 +49,7 @@ function BaseItem({ base, onPressItem }) {
             onPress={() => onPressItem(base)}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
-                    {/* <Image source={require('../../assets/priceteatFundoRem.png')}/> */}
+                    <Image style={styles.selectedImage} source={require('../../assets/priceteatFundoRem.png')}/>
                 </View>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{base.NomeBase}</Text>
@@ -176,11 +176,18 @@ const styles = StyleSheet.create({
     },
     image: {
         backgroundColor: '#99BC85',
-        height: 120,
+        height: '100%',
         width: '30%',
         borderRadius: 10,
         borderTopRightRadius: 70,
         borderBottomRightRadius: 70,
+        justifyContent:'center'
+    },
+    selectedImage:{
+        width:92,
+        height:92,
+        borderRadius:72,
+        borderColor:'#BFD8AF'
     },
     underline: {
         textDecorationLine: 'underline'

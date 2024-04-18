@@ -38,9 +38,8 @@ export default function LucroReceita({ route, navigation }) {
               name='home-outline'/>
           </TouchableOpacity>
         </View>
-        {/* <Text>Escreva quantos % você quer de lucro nesta receita</Text> */}
         <View style={styles.lucroContainer}>
-          <Text style={styles.label}>Lucro Percentual:</Text>
+          <Text style={styles.label}>Lucro em %:</Text>
           <TextInput
             style={styles.input}
             keyboardType="numeric"
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     backgroundColor: '#D4E7C5',
     width:'100%',
-    height:'15%',
+    height:130,
     marginBottom:'5%',
     borderBottomWidth:3,
     borderColor:'#99BC85',
@@ -112,15 +111,17 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 10,
     fontSize: 14,
-    borderColor: '#99BC85'
+    borderColor: '#99BC85',
+    fontFamily: 'Quicksand-Bold',
   },
   buttonSalvar: {
     width:'60%',
     marginTop: 20,
     padding: 10,
     borderRadius: 30,
-    height:'6%',
+    height:50,
     backgroundColor: '#000',
+    fontFamily: 'Quicksand-Regular',
   },
   buttonVoltar: {
     marginTop: 10,
@@ -133,5 +134,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Regular',
     color: '#E1F0DA',
     textAlign: 'center'
+  },
+  label: {
+    fontFamily: 'Quicksand-Bold',
   }
 });

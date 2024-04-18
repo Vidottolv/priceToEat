@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 3,
         borderColor: '#99BC85',
         backgroundColor: '#D4E7C5',
-        height: '12%'
+        height: 130
     
     },
     underline: {

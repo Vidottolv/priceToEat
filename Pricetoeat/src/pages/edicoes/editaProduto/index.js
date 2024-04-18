@@ -91,12 +91,6 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 20,
-        textShadowRadius: 4,
-        textShadowColor: '#BFD8AF',
-        textShadowOffset: {
-            width: 2,
-            height: 2
-        },
         fontFamily: 'Quicksand-Regular',
         color: '#99BC85',
         marginBottom: '1%',

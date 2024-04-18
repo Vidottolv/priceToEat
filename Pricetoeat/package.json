@@ -36,6 +36,7 @@
     "react-native-floating-action-circle-button": "^0.0.6",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-ionicons": "^4.6.5",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-mask-input": "^1.2.3",
     "react-native-numeric-input": "^1.9.1",
     "react-native-paper": "^4.12.6",

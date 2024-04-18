@@ -20,14 +20,14 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
     const flashMessageSucesso = () => {
         showMessage({
             message: 'Item Excluído.',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger',
+            type: 'info',
             backgroundColor: '#0bbd29'
         });
     };
     const flashMessageErro = () => {
         showMessage({
             message: 'Erro ao excluir item',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info',
         });
     };
     const deletar = async () => {
@@ -55,7 +55,10 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
             >
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
-                    <Image source={require('../../assets/priceteatFundoRem.png')} />
+                    <Image 
+                        source={produto?.Blob ? { uri: produto?.Blob } : require('../../assets/priceteatFundoRem.png')} 
+                        style={styles.selectedImage} 
+                    />
                 </View>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{produto?.Nome}</Text>
@@ -150,7 +153,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         height:'100%'
-        // marginRight:'15%',
     },
     content: {
         flex: 1,
@@ -160,7 +162,6 @@ const styles = StyleSheet.create({
     subContainerComponent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        ////borderWidth:2
     },
     title: {
         fontSize: 20,
@@ -172,11 +173,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'Quicksand-Bold',
         color: '#000',
-        // marginTop: '2%',
-        // marginBottom: '2%'
     },
     textos: {
-        // flex:1
         width: '63%',
         marginLeft: '7%'
     },
@@ -194,12 +192,18 @@ const styles = StyleSheet.create({
     },
     image: {
         backgroundColor: '#99BC85',
-        height: 80,
+        height: 84,
         width: '30%',
         borderRadius: 10,
         borderTopRightRadius: 70,
         borderBottomRightRadius: 70,
-        ////borderWidth:2
+        justifyContent:'center'
+    },
+    selectedImage:{
+        width:80,
+        height:80,
+        borderRadius:72,
+        borderColor:'#BFD8AF'
     },
     headerModal: {
         flexDirection: 'row',
@@ -224,12 +228,7 @@ const styles = StyleSheet.create({
         borderColor: '#99BC85',
     },
     viewProduto: {
-        //borderWidth:2,
         flexDirection: 'row',
-        // marginLeft: '8%',
-        // marginRight:'30%',
-        // marginBottom: '2%',
-        // marginTop:'2%'
     },
     flat: {
         marginTop: '5%',

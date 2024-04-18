@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../../controller';
-import { useGlobalContext } from '../context/produtoContext';
 import { useFonts } from 'expo-font';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useReceitasData } from '../hooks/useReceitasData';
@@ -11,11 +10,9 @@ import { addDoc, collection, getDoc, getDocs, updateDoc, doc } from 'firebase/fi
 
 export function NomearReceita({ route }) {
   const { produto, base } = route.params;
-  const { AddToReceitaArray, removeItemFromReceitaArray, cleanReceitaArray } = useGlobalContext();
   const { data:receitasData } = useReceitasData();
   const [nomeReceita, setNomeReceita] = useState('');
   const [value, setValue] = useState(null);
-  const [placeholderText, setPlaceholderText] = useState('Já existente');
   const [data, setData] = useState(receitasData);
 
   const navigation = useNavigation();
@@ -75,17 +72,6 @@ export function NomearReceita({ route }) {
             };
             await addDoc(receitaRef, novaReceita); 
             navigation.navigate('home')
-            // if(produto) {
-            //   const nomeproduto = produto.Nome;
-            //   const tamanhoProduto = produto.tamanhoEmbalagem;
-            //   const precoproduto = produto.preco;
-            //   const unidadeproduto = produto.unidadeDeMedida;
-            //   console.log(nomeReceita, produto)
-            //   navigation.navigate('QtyProdutos', { receita: nomeReceita, nome: nomeproduto, tamanho: tamanhoProduto, custoprod: precoproduto, unidadeprod: unidadeproduto,idReceita: qtyReceitas });
-            // }
-            // else{
-            //   setTimeout( () => navigation.navigate('home'), duration = 1000)   
-            // }
           }            
       } catch (error) {
         console.error('erro', error);
@@ -135,7 +121,7 @@ export function NomearReceita({ route }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.title, styles.underline]}>Editar Produto</Text>
+        <Text style={[styles.title, styles.underline]}>Criar Receita</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons
             size={30}

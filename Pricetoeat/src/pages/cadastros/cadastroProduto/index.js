@@ -1,34 +1,39 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react';
 import * as animatable from 'react-native-animatable'
 import { RadioButtonItem, RadioButtonGroup } from 'expo-radio-button';
-import NumericInput from 'react-native-numeric-input'
 import { firestore, auth } from '../../../controller';
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import { showMessage, hideMessage } from 'react-native-flash-message';
 import MaskInput, { createNumberMask } from 'react-native-mask-input';
 import { useFonts } from 'expo-font';
+import { Tooltip } from 'react-native-elements';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+
 
 export default function CadastroProduto() {
     const [nomeProduto, setNomeProduto] = useState('');
     const [precoProduto, setPrecoProduto] = useState();
     const [tamProdBruto, setTamProdBruto] = useState();
     const [current, setCurrent] = useState(1);
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const navigation = useNavigation();
     const flashMessageSucesso = () => {
         showMessage({
             backgroundColor: '#0bbd29',
             message: 'Sucesso no cadastro!',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info',
         });
     }
     const flashMessageErro = () => {
         showMessage({
             backgroundColor: '#E06F72',
             message: 'Erro no Cadastro! Preencha todos os campos.',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info',
         });
     }
     const realMask = createNumberMask({
@@ -37,12 +42,20 @@ export default function CadastroProduto() {
         separator: ',',
         precision: 2,
     })
-    const commonMask = createNumberMask({
-        prefix: ['', '', ' '],
-        demiliter: '.',
-        separator: ',',
-        precision: 2
-    })
+    let result = '';
+    const uploadMediaFile = async () => {
+        result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            console.log(image)
+        }
+    }
+
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -57,20 +70,42 @@ export default function CadastroProduto() {
             try {
                 const user = auth.currentUser;
                 if (user) {
+                    const { uri } = await FileSystem.getInfoAsync(image);
+                    const blob = await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.onload = () => { 
+                            resolve(xhr.response); };
+                        xhr.onerror = (e) => { 
+                            reject(new TypeError('Network Request Failed')); };
+                        xhr.responseType = 'blob';
+                        xhr.open('GET', uri, true);
+                        xhr.send(null);
+                    });
+                    const filename = image.substring(image.lastIndexOf('/') + 1);
+                    const blobData = await new Response(blob).blob();
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blobData);
+                    
+                    reader.onload = async () => {
+                        const Blobbase64 = reader.result;
+                        
                         const snapshot = await getDocs(collection(firestore, 'produtos'));
                         const qtyProdutos = snapshot.size + 1;
-                        const docRef = addDoc(collection(firestore, 'produtos'), {
+                        const docRef = await addDoc(collection(firestore, 'produtos'), {
                             Nome: nomeProduto,
-                            Preco: parseInt(precoProduto,10),
-                            TamanhoEmbalagem: parseInt(tamProdBruto,10),
+                            Preco: parseInt(precoProduto, 10),
+                            TamanhoEmbalagem: parseInt(tamProdBruto, 10),
                             UnidadeDeMedida: current,
                             IDUsuario: user.uid,
-                            IDProduto: qtyProdutos
+                            IDProduto: qtyProdutos,
+                            Filename: filename,
+                            Blob: Blobbase64
                         });
-                        // console.log(docRef);
+                        console.log(docRef);
                         setNomeProduto('');
                         flashMessageSucesso();
                         navigation.goBack();
+                    };
                     }
             } catch (error) { flashMessageErro(); }
         } else { flashMessageErro(); }
@@ -89,10 +124,20 @@ export default function CadastroProduto() {
                 </View>
                 <ScrollView>
                     <View style={styles.compound}>
+                        <Text style={styles.subtitle}>Foto do Produto</Text>
+                        <TouchableOpacity
+                            style={styles.buttonSelectPhoto}
+                            onPress={uploadMediaFile}>
+                                {image ? (
+                                    <Image source={{ uri: image }} style={styles.selectedImage} />
+                                ) : (
+                                    <Text style={styles.buttonPhotoText}>Escolha a Foto</Text>
+                                )}
+                        </TouchableOpacity>
                         <Text style={styles.subtitle}>Nome do produto</Text>
                         <TextInput
                             placeholder="Digite o ingrediente"
-                            placeholderTextColor={'#000'}
+                            placeholderTextColor={'#99BC85'}
                             value={nomeProduto}
                             onChangeText={(value) => setNomeProduto(value)}
                             style={styles.input} />
@@ -100,7 +145,7 @@ export default function CadastroProduto() {
                         <RadioButtonGroup
                             selected={current}
                             onSelected={(value) => setCurrent(value)}
-                            radioBackground="black">
+                            radioBackground="#99BC85">
                             <RadioButtonItem value='1' label={<Text style={styles.textRadio}> Kilos (Kg)</Text>} style={styles.radio} />
                             <RadioButtonItem value='2' label={<Text style={styles.textRadio}> Gramas (g)</Text>} style={styles.radio} />
                             <RadioButtonItem value='3' label={<Text style={styles.textRadio}> Litros (Lt)</Text>} style={styles.radio} />
@@ -109,22 +154,28 @@ export default function CadastroProduto() {
                         </RadioButtonGroup>
                         <Text style={styles.subtitle}>Preço do produto</Text>
                         <MaskInput style={styles.input}
-                            value={precoProduto} // Bind to the precoProduto state
+                            value={precoProduto}
                             mask={realMask}
                             onChangeText={(masked, unmasked) => {
-                                setPrecoProduto(unmasked); // Update the state with unmasked value
+                                setPrecoProduto(unmasked);
                             }} />
                         <View style={{display: 'flex', flexDirection:'row', alignItems: 'center', marginTop: '5%' }}>
                             <Text style={styles.subtitle}>Tamanho do produto</Text>
-                            <Ionicons   
-                                name='alert-circle-outline' 
-                                size={25} 
-                                style={{ marginLeft: '2%', marginBottom: '1%'}} />
+                            <Tooltip
+                                width={300}
+                                height={80}
+                                containerStyle={{backgroundColor:'#99BC85'}}
+                                pointerColor='#99BC85'
+                                popover={<Text>o Tamanho do Produto é a quantidade que vem em cada embalagem. Por ex: Um saco de arroz pesa 5kg, o Tamanho dele é 5.</Text>}>
+                                    <Ionicons   
+                                        name='alert-circle-outline' 
+                                        size={25} 
+                                        color={'#99BC85'}
+                                        style={{ marginLeft: '5%', marginBottom: '1%'}} />
+                            </Tooltip>
                         </View>
-                            {/* <Text style={styles.rodape}>** Cadastre o peso/litragem/unidade do produto. Ex: Para uma barra de chocolate de 2Kg, cadastre 2 no campo abaixo e selecione Kg em Unidade de Medida.</Text>     */}
                         <MaskInput style={styles.input}
                             value={tamProdBruto}
-                            mask={commonMask}
                             onChangeText={(masked, unmasked) => {
                                 setTamProdBruto(unmasked);
                             }} />
@@ -132,7 +183,7 @@ export default function CadastroProduto() {
                             <Text style={styles.textButton}>Cadastrar</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={{ height: 120 }}>
+                    <View style={{ height: 200 }}>
                     </View>
                 </ScrollView>
             </animatable.View>
@@ -144,19 +195,10 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         alignItems: 'center',
-        // justifyContent: 'center',
         flex: 1,
         width:'100%'
-        // padding: 10
     },
-    // content: {
-    //     backgroundColor: '#fff',
-    //     height: '85%',
-    //     width: '100%',
-    //     borderRadius: 24,
-    //     paddingStart: '5%',
-    //     paddingEnd: '5%',
-    // },
+
     compound: {
         paddingLeft: 20,
         paddingRight: 20,
@@ -187,7 +229,6 @@ const styles = StyleSheet.create({
         color: '#99BC85',
         marginBottom: '2%',
         borderColor: '#000',
-        // borderWidth:1
     },
     input: {
         color: '#000',
@@ -208,26 +249,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 10,
-        // marginTop: '8%',
         borderBottomWidth: 3,
         borderColor: '#99BC85',
         backgroundColor: '#D4E7C5',
-        height: '15%',
-
-    
+        height: '15%',    
     },
     underline: {
         textDecorationLine: 'underline'
     },
     radio: {
-        borderColor: '#000',
+        borderColor: '#99BC85',
         marginTop: 1,
         backgroundColor: '#E1F0DA',
 
     },
     textRadio: {
-        color: '#000',
-        fontFamily: 'Quicksand-Regular',
+        color: '#99BC85',
+        fontFamily: 'Quicksand-Bold',
         margin: 10
     },
     rodape: {
@@ -253,5 +291,29 @@ const styles = StyleSheet.create({
         color: '#000',
         fontFamily: 'Quicksand-Regular',
         alignSelf: 'center'
-    }
+    },
+    buttonSelectPhoto:{
+        backgroundColor:'#99BC85',
+        borderRadius:72,
+        paddingVertical:8,
+        height:120,
+        width:120,
+        marginBottom:10,
+        justifyContent:'center',
+        alignItems:'center',
+        alignSelf:'center',
+        borderWidth:2,
+        borderColor:'#BFD8AF'
+    },
+    selectedImage:{
+        width:120,
+        height:120,
+        borderRadius:72,
+        borderWidth:2,
+        borderColor:'#BFD8AF'
+    },
+    buttonPhotoText:{
+        color:'#FFF',
+        fontFamily:'Quicksand-Regular'
+    },
 })

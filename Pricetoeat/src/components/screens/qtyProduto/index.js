@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { firestore, auth } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 export default function QtyProdutos({ route, navigation }) {
     const { receita } = route.params;
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     flex: 1,
+    height:'100%',
     width:'100%'
   },
   icon:{
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     backgroundColor: '#D4E7C5',
     width:'100%',
-    height:'15%',
+    height:130,
     marginBottom:'5%',
     borderBottomWidth:3,
     borderColor:'#99BC85',
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
     borderRadius: 30,
-    height:'6%',
+    height:50,
     backgroundColor: '#000',
   },
   buttonVoltar: {

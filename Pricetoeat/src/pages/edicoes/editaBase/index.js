@@ -110,18 +110,12 @@ const styles = StyleSheet.create({
         }
     },
     subtitle: {
-        fontSize: 20,
-        textShadowRadius: 4,
-        // textShadowColor: '#BFD8AF',
-        // textShadowOffset: {
-        //     width: 2,
-        //     height: 2
-        // },
-        fontFamily: 'Quicksand-Regular',
-        color: '#000',
-        marginBottom: '1%',
-        borderColor: '#000',
-    },
+      fontSize: 20,
+      fontFamily: 'Quicksand-Regular',
+      color: '#99BC85',
+      marginBottom: '1%',
+      borderColor: '#000',
+  },
     input: {
         color: '#000',
         backgroundColor: '#E1F0DA',
@@ -145,7 +139,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 3,
         borderColor: '#99BC85',
         backgroundColor: '#D4E7C5',
-        height: '25%',  
+        height: 130,  
     },
     underline: {
         textDecorationLine: 'underline'

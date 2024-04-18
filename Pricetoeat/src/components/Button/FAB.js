@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FloatingAction } from "react-native-floating-action";
 import { useFonts } from "expo-font";
@@ -11,9 +11,13 @@ export default function FAB() {
     'Quicksand-Bold': require('../../assets/fonts/Quicksand-Bold.ttf'),
     'Quicksand-Medium': require('../../assets/fonts/Quicksand-Medium.ttf'),
   });
+
+  const navigation = useNavigation();
+
   if (!loaded) {
     return null;
   }
+
   const actions = [
     {
       text: "Adicionar Base",
@@ -33,46 +37,37 @@ export default function FAB() {
       name: "cadastroProduto",
       position: 1
     },
-    {
-      text: "Adicionar Receita",
-      color:'#99BC85',
-      fontFamily:'Quicksand-Regular',          
-      buttonSize:50,
-      margin:5,
-      icon: <Ionicons name="restaurant-outline" size={25}/>,
-      name: "firstSteps",
-      position: 3
-    },
-    {
-      text: "Configurações",
-      color:'#99BC85',          
-      buttonSize:50,
-      margin:5,
-      icon: <Ionicons name="settings" size={25}/>,
-      name: "nomearReceita",
-      position: 4
-    }
-    ];
-    const navigation = useNavigation();
-    
-    return (
-      <FloatingAction
-        actions={actions} 
-        style={{fontFamily:'Quicksand-Regular'}}
-        color="#99BC85"
-        distanceToEdge={20}
-        buttonSize={60}
-        overlayColor="rgba(225,240,218,0.3)"
-        onPressItem={name => {
-          navigation.navigate(name)
-      }}/>
+    // {
+    //   text: "Adicionar Receita",
+    //   color:'#99BC85',
+    //   fontFamily:'Quicksand-Regular',          
+    //   buttonSize:50,
+    //   margin:5,
+    //   icon: <Ionicons name="restaurant-outline" size={25}/>,
+    //   name: "firstSteps",
+    //   position: 3
+    // },
+    // {
+    //   text: "Configurações",
+    //   color:'#99BC85',          
+    //   buttonSize:50,
+    //   margin:5,
+    //   icon: <Ionicons name="settings" size={25}/>,
+    //   name: "nomearReceita",
+    //   position: 4
+    // }
+  ];
+
+  return (
+    <FloatingAction
+      actions={actions} 
+      style={{fontFamily:'Quicksand-Regular'}}
+      color="#99BC85"
+      distanceToEdge={20}
+      buttonSize={60}
+      overlayColor="rgba(225,240,218,0.3)"
+      onPressItem={name => {
+        navigation.navigate(name)
+    }}/>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    // position: 'absolute',
-    alignItems: 'center',
-    justifyContent:'flex-end'
-  },
-});
