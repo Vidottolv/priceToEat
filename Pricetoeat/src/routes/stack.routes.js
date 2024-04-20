@@ -13,6 +13,7 @@ import EditarBaseScreen from '../pages/edicoes/editaBase';
 import QtyProdutos from '../components/screens/qtyProduto';
 import FirstSteps from '../components/FirstsSteps';
 import LucroReceita from '../components/screens/lucro';
+import ImagemReceita from '../components/screens/imagem';
 
 const Stack = createNativeStackNavigator();
 
@@ -113,6 +114,13 @@ export function StackRoutes(){
             <Stack.Screen
             name="lucroReceita"
             component={LucroReceita}
+            options={{
+                headerShown:false,
+            }}
+            />
+            <Stack.Screen
+            name="imagemReceita"
+            component={ImagemReceita}
             options={{
                 headerShown:false,
             }}

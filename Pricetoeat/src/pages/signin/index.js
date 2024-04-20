@@ -10,11 +10,10 @@ import { ModalTrocaSenha } from '../../components/modais/modalTrocaSenha';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import {getFirestore, collection, doc, setDoc} from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
-
+import { Messages } from '../../components/messages';
 
 export default function Signin(){
+    const { MSG_SucessoLogin } = Messages();
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -37,7 +36,11 @@ export default function Signin(){
     const handleSignIn = () => {
         signInWithEmailAndPassword(auth,email,password)
         .then((userCredential) => {
-            navigation.navigate('home')
+            // setTimeout( 
+            //     () => {
+            //         Messages.MSG_SucessoLogin,
+            //         navigation.navigate('home')},
+            //     duration = 2000)
             const user = userCredential.user;
             console.log('sucesso')
         }).catch(error => {
@@ -54,16 +57,14 @@ export default function Signin(){
         setEscondeSenha(!escondeSenha);
     };
 
-    const handleCreateAccount = (email, senha, nome, filename, blob) => {
+    const handleCreateAccount = (email, senha, nome) => {
         createUserWithEmailAndPassword(auth, email, senha)
             .then((response) => {
                 const uid = response.user.uid
                 const data = {
                     id: uid,
                     email,
-                    nome,
-                    filename,
-                    blob
+                    nome
                 };
                 const usersRef = collection(firestore, 'usuarios');
                 const userDoc = doc(usersRef, uid);
@@ -77,51 +78,6 @@ export default function Signin(){
                 setTimeout(() => setSnackbarErro(false), 2000)
             })
     }
-
-    let result = '';
-    const uploadMediaFile = async () => {
-        result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        })
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            console.log(image)
-        }
-    }
-    const uploadMedia = async () => {
-        setUploading(true)
-        try {
-            const { uri } = await FileSystem.getInfoAsync(image);
-            const blob = await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = () => { 
-                    resolve(xhr.response); };
-                xhr.onerror = (e) => { 
-                    reject(new TypeError('Network Request Failed')); };
-                xhr.responseType = 'blob';
-                xhr.open('GET', uri, true);
-                xhr.send(null);
-            });
-            const filename = image.substring(image.lastIndexOf('/') + 1);
-            const blobData = await new Response(blob).blob();
-            const reader = new FileReader();
-            reader.readAsDataURL(blobData);
-            reader.onloadend = () => {
-                const Blobbase64 = reader.result;
-            handleCreateAccount(emailCadastro, senhaCadastro, nomeCadastro, filename, Blobbase64);
-            setUploading(false);
-            setImage(null);
-            setNomeCadastro(null);
-            setSenhaCadastro(null);
-            }
-        } catch (error) {
-            console.error(error);
-            setUploading(false);
-        }   
-    }         
           
     return(
         <View style={styles.container}>
@@ -189,15 +145,6 @@ export default function Signin(){
                 </View>)}
                 {cadastroSelected && (
                     <View>
-                        <TouchableOpacity
-                            style={styles.buttonSelectPhoto}
-                            onPress={uploadMediaFile}>
-                                {image ? (
-                                    <Image source={{ uri: image }} style={styles.selectedImage} />
-                                ) : (
-                                    <Text style={styles.buttonPhotoText}>Escolha a Foto</Text>
-                                )}
-                        </TouchableOpacity>
                         <Text style={styles.titulo}>Nome</Text>
                         <TextInput
                             placeholder="Seu Nome"

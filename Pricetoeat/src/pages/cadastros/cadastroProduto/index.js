@@ -13,7 +13,6 @@ import { Tooltip } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
-
 export default function CadastroProduto() {
     const [nomeProduto, setNomeProduto] = useState('');
     const [precoProduto, setPrecoProduto] = useState();
@@ -55,7 +54,6 @@ export default function CadastroProduto() {
             console.log(image)
         }
     }
-
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -65,51 +63,65 @@ export default function CadastroProduto() {
         return null;
       }
     
-    async function cadastraProduto() {
+      async function cadastraProduto() {
         if (nomeProduto != '' && precoProduto != null && tamProdBruto != null) {
             try {
                 const user = auth.currentUser;
                 if (user) {
-                    const { uri } = await FileSystem.getInfoAsync(image);
-                    const blob = await new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.onload = () => { 
-                            resolve(xhr.response); };
-                        xhr.onerror = (e) => { 
-                            reject(new TypeError('Network Request Failed')); };
-                        xhr.responseType = 'blob';
-                        xhr.open('GET', uri, true);
-                        xhr.send(null);
-                    });
-                    const filename = image.substring(image.lastIndexOf('/') + 1);
-                    const blobData = await new Response(blob).blob();
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blobData);
-                    
-                    reader.onload = async () => {
-                        const Blobbase64 = reader.result;
-                        
-                        const snapshot = await getDocs(collection(firestore, 'produtos'));
-                        const qtyProdutos = snapshot.size + 1;
-                        const docRef = await addDoc(collection(firestore, 'produtos'), {
-                            Nome: nomeProduto,
-                            Preco: parseInt(precoProduto, 10),
-                            TamanhoEmbalagem: parseInt(tamProdBruto, 10),
-                            UnidadeDeMedida: current,
-                            IDUsuario: user.uid,
-                            IDProduto: qtyProdutos,
-                            Filename: filename,
-                            Blob: Blobbase64
+                    let Blobbase64 = null; 
+                    let filename = null; 
+   
+                    if (image) {
+                        const { uri } = await FileSystem.getInfoAsync(image);
+                        const blob = await new Promise((resolve, reject) => {
+                            const xhr = new XMLHttpRequest();
+                            xhr.onload = () => { 
+                                resolve(xhr.response); 
+                            };
+                            xhr.onerror = (e) => { 
+                                reject(new TypeError('Network Request Failed')); 
+                            };
+                            xhr.responseType = 'blob';
+                            xhr.open('GET', uri, true);
+                            xhr.send(null);
                         });
-                        console.log(docRef);
-                        setNomeProduto('');
-                        flashMessageSucesso();
-                        navigation.goBack();
-                    };
+                        filename = image.substring(image.lastIndexOf('/') + 1);
+                        const blobData = await new Response(blob).blob();
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blobData);
+                        await new Promise(resolve => {
+                            reader.onload = () => {
+                                Blobbase64 = reader.result;
+                                resolve();
+                            };
+                        });
                     }
-            } catch (error) { flashMessageErro(); }
-        } else { flashMessageErro(); }
+    
+                    const snapshot = await getDocs(collection(firestore, 'produtos'));
+                    const qtyProdutos = snapshot.size + 1;
+                    const docRef = await addDoc(collection(firestore, 'produtos'), {
+                        Nome: nomeProduto,
+                        Preco: parseInt(precoProduto, 10),
+                        TamanhoEmbalagem: parseInt(tamProdBruto, 10),
+                        UnidadeDeMedida: current,
+                        IDUsuario: user.uid,
+                        IDProduto: qtyProdutos,
+                        Filename: filename,
+                        Blob: Blobbase64
+                    });
+                    console.log(docRef);
+                    setNomeProduto('');
+                    flashMessageSucesso();
+                    navigation.goBack();
+                }
+            } catch (error) {
+                flashMessageErro();
+            }
+        } else {
+            flashMessageErro();
+        }
     }
+    
     return (
         <View style={styles.container}>
             <animatable.View animation={'fadeInRight'} style={{width:'100%'}}>

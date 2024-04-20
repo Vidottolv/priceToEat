@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
@@ -50,14 +50,6 @@ function ReceitaItem({ receita, onPressItem }) {
         }
         return false;
     };
-    // const showFlashMsg = () => {
-    //     setTimeout(() => {
-    //         showMessage({
-    //             message: 'Existem valores nulos, atualize-os!',
-    //             type: 'warning',
-    //         });
-    //     }, 2000);
-    // };
     const mensagem = () => {
         if(receita.lucroPercent == 0) {
             return ( <Text style={styles.textVerMais}>Clique para cadastrar o Lucro.</Text> );
@@ -72,7 +64,6 @@ function ReceitaItem({ receita, onPressItem }) {
     const handlePressItem = () => {
         if (verificarValoresNulos()) {
             onPressItem(receita);
-            // showFlashMsg();
         } else {
             onPressItem(receita);
         }
@@ -86,8 +77,13 @@ function ReceitaItem({ receita, onPressItem }) {
             onLongPress={deletar}
             onPress={handlePressItem}>
             <View style={styles.viewProduto}>
-                <View style={styles.image}>
-                </View>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('imagemReceita', {receitaId: receita.id})}
+                    style={styles.image}>
+                    <Image 
+                        source={receita?.Blob ? { uri: receita?.Blob } : require('../../assets/priceteatFundoRem.png')} 
+                        style={styles.selectedImage}/>
+                </TouchableOpacity>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{receita?.nomeReceita}</Text>
                     <View style={styles.subContainerComponent}>
@@ -215,6 +211,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderTopRightRadius: 70,
         borderBottomRightRadius: 70,
+        justifyContent:'center'
+    },
+    selectedImage:{
+        marginLeft:'5%',
+        width:100,
+        height:100,
+        borderRadius:72,
+        borderColor:'#BFD8AF'
     },
     underline: {
         textDecorationLine: 'underline'

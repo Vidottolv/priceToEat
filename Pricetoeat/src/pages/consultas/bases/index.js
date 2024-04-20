@@ -49,7 +49,10 @@ function BaseItem({ base, onPressItem }) {
             onPress={() => onPressItem(base)}>
             <View style={styles.viewProduto}>
                 <View style={styles.image}>
-                    <Image style={styles.selectedImage} source={require('../../assets/priceteatFundoRem.png')}/>
+                    <Image 
+                        source={base?.Blob ? { uri: base?.Blob } : require('../../assets/priceteatFundoRem.png')} 
+                        style={styles.selectedImage} 
+                    />
                 </View>
                 <View style={styles.textos}>
                     <Text style={[styles.subtitle, styles.underline]}>{base.NomeBase}</Text>

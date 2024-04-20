@@ -9,6 +9,7 @@ import firebase,{initializeApp} from 'firebase/app'
 const firebaseConfig = {
   apiKey: "AIzaSyDLip3S_P1ZkGpl1ZBZTQ6OgGWtwfUqYrI",
   authDomain: "priceteat.firebaseapp.com",
+  databaseURL: "https://priceteat-default-rtdb.firebaseio.com",
   projectId: "priceteat",
   storageBucket: "priceteat.appspot.com",
   messagingSenderId: "37830508502",

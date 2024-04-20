@@ -74,6 +74,10 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
         <View style={styles.content}>
           <View style={styles.headerModal}>
             <Text style={[styles.title, styles.underline]}>{receita?.nomeReceita}</Text>
+            {/* <TouchableOpacity
+              style={styles.backButton}>
+              <Ionicons name='camera-outline' size={30} color={'#000'} />
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={styles.backButton}
               onPress={handleClose}>
