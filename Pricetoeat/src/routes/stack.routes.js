@@ -42,13 +42,6 @@ export function StackRoutes(){
             }}
             />
             <Stack.Screen
-            name="cadastroUsuario"
-            component={CadastroUsuario}
-            options={{
-                headerShown:false,
-            }}
-            />
-            <Stack.Screen
             name="cadastroProduto"
             component={CadastroProduto}
             options={{

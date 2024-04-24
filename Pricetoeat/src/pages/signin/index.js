@@ -2,7 +2,7 @@ import { signInWithEmailAndPassword, getAuth, createUserWithEmailAndPassword } f
 import React, { useState } from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Button, Image, PermissionsAndroid, launchImageLibrary, useEffect,ScrollView} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
-import { Snackbar } from 'react-native-paper';
+import { showMessage } from 'react-native-flash-message';
 import * as animatable from 'react-native-animatable';
 import { Ionicons } from "@expo/vector-icons";
 import app from "../../firebaseConfig";
@@ -10,15 +10,11 @@ import { ModalTrocaSenha } from '../../components/modais/modalTrocaSenha';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import {getFirestore, collection, doc, setDoc} from 'firebase/firestore';
-import { Messages } from '../../components/messages';
 
 export default function Signin(){
-    const { MSG_SucessoLogin } = Messages();
     const navigation = useNavigation();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [image, setImage] = useState(null);
-    const [uploading, setUploading] = useState(false);
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null);
     const [nomeCadastro, setNomeCadastro] = useState('');
     const [emailCadastro, setEmailCadastro] = useState('');
     const [senhaCadastro, setSenhaCadastro] = useState('');
@@ -26,8 +22,6 @@ export default function Signin(){
     const [SenhaVisible, setSenhaVisible] = useState(false);
     const [loginSelected, setLoginSelected] = useState(true);
     const [cadastroSelected, setCadastroSelected] = useState(false);
-    const [SnackbarSucesso, setSnackbarSucesso] = useState(false);
-    const [SnackbarErro, setSnackbarErro] = useState(false);
     const handleOpenModalSenha = () => {setSenhaVisible(true);}
     const auth = getAuth(app)
     const firestore = getFirestore(app)
@@ -36,15 +30,35 @@ export default function Signin(){
     const handleSignIn = () => {
         signInWithEmailAndPassword(auth,email,password)
         .then((userCredential) => {
-            // setTimeout( 
-            //     () => {
-            //         Messages.MSG_SucessoLogin,
-            //         navigation.navigate('home')},
-            //     duration = 2000)
+            showMessage({
+                backgroundColor: '#0bbd29',
+                message: "Sucesso! Entrando no app.",
+                type: 'success',
+            })
+            setTimeout(() => {
+                    navigation.navigate('home')},
+                duration = 2000)
             const user = userCredential.user;
-            console.log('sucesso')
         }).catch(error => {
-        })}
+            let errorMessage = "Erro no cadastro, preencha os campos corretamente";
+            if (error.code === "auth/invalid-email" || error.code === "auth/invalid-credential") {
+                errorMessage = "E-mail ou senha inválidos.";
+            }
+            if (error.code === "auth/missing-email") {
+                errorMessage = "Insira o E-mail.";
+            }
+            if (error.code === "auth/missing-password") {
+                errorMessage = "Insira a senha.";
+            }
+            showMessage({
+                backgroundColor: '#E06F72',
+                message: errorMessage,
+                type: 'warning',
+                duration:2500
+            });
+            console.log(error);
+            })
+        }
     const [loaded] = useFonts({
         'Quicksand-Regular': require('../../assets/fonts/Quicksand-Regular.ttf'),
         'Quicksand-Bold': require('../../assets/fonts/Quicksand-Bold.ttf'),
@@ -56,8 +70,8 @@ export default function Signin(){
     const toggleSecureEntry = () => {
         setEscondeSenha(!escondeSenha);
     };
-
     const handleCreateAccount = (email, senha, nome) => {
+        if (nome != null){
         createUserWithEmailAndPassword(auth, email, senha)
             .then((response) => {
                 const uid = response.user.uid
@@ -69,14 +83,43 @@ export default function Signin(){
                 const usersRef = collection(firestore, 'usuarios');
                 const userDoc = doc(usersRef, uid);
                 setDoc(userDoc, data);
-                setSnackbarSucesso(true);
-                setTimeout(() => setSnackbarSucesso(false), 1999)
-                setTimeout(() => navigation.navigate('home'), duration = 2000)
+                showMessage({
+                    backgroundColor: '#0bbd29',
+                    message: 'Sucesso no cadastro! Sendo redirecionado para o app.',
+                    type: 'info',
+                    duration:1999
+                })
+                setTimeout(() => {
+                    navigation.navigate('home')}, duration = 2000)
             }).catch(error => {
-                console.log(error)
-                setSnackbarErro(true);
-                setTimeout(() => setSnackbarErro(false), 2000)
-            })
+                let errorMessage = "Erro no cadastro, preencha os campos corretamente";
+                if (error.code === "auth/invalid-email") {
+                    errorMessage = "E-mail inválido.";
+                }
+                if(error.code === "auth/missing-password") {
+                    errorMessage = "Insira a senha.";
+                }
+                if (error.code === "auth/weak-password") {
+                    errorMessage = "A senha deve ter pelo menos 6 caracteres.";
+                }
+                if(error.code === "auth/email-already-in-use") {
+                    errorMessage = "Este e-mail já está em uso.";
+                }
+                console.log(error);
+                showMessage({
+                    backgroundColor: '#E06F72',
+                    message: errorMessage,
+                    type: 'info',
+                    duration:2500
+                });
+            })} else {
+                showMessage({
+                    backgroundColor: '#E06F72',
+                    message: "Insira seu nome.",
+                    type: 'info',
+                    duration:2500
+                });
+            }
     }
           
     return(
@@ -182,7 +225,7 @@ export default function Signin(){
                         </View>
                         <TouchableOpacity 
                             style={styles.buttonAcessarCadastrar} 
-                            onPress={() => uploadMedia()}>
+                            onPress={() => handleCreateAccount(emailCadastro,senhaCadastro,nomeCadastro)}>
                             <Text style={styles.buttonTextAcessarCadastrar}>Cadastrar</Text>
                         </TouchableOpacity>
                  </View>
@@ -195,16 +238,6 @@ export default function Signin(){
             </Modal>
             </animatable.View>
             </ScrollView>
-            <Snackbar
-                visible={SnackbarSucesso}
-                style={{ height: 60, backgroundColor: '#5ea955' }}>
-                    Usuário foi cadastrado! Entrando no App.
-            </Snackbar>
-            <Snackbar
-                visible={SnackbarErro}
-                style={{ height: 60, backgroundColor: '#e50e0e' }}>
-                    Falha ao cadastrar usuário! Tente novamente.
-            </Snackbar>
             </LinearGradient>
     </View>
 )}
