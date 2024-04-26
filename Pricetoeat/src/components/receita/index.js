@@ -7,6 +7,7 @@ import { useFonts } from 'expo-font';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useReceitasData } from '../hooks/useReceitasData';
 import { addDoc, collection, getDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { showMessage } from 'react-native-flash-message';
 
 export function NomearReceita({ route }) {
   const { produto, base } = route.params;
@@ -71,9 +72,19 @@ export function NomearReceita({ route }) {
               ProdutosReceita: listaCustos
             };
             await addDoc(receitaRef, novaReceita); 
+            showMessage({
+              backgroundColor:'#0bbd29',
+              message: 'Sucesso no cadastro da receita!',
+              type: 'success', 
+            });
             navigation.navigate('home')
           }            
       } catch (error) {
+        showMessage({
+          backgroundColor:'#E06F72',
+          message: 'Erro no cadastro da receita!',
+          type:'warning', 
+        });
         console.error('erro', error);
       }
     }
@@ -111,9 +122,20 @@ export function NomearReceita({ route }) {
         ProdutosReceita: listaCustos,
         custoReceita: custoReceita
       });
-      console.log("Receita atualizada com sucesso!");  
+      console.log("Receita atualizada com sucesso!");
+      showMessage({
+        backgroundColor:'#0bbd29',
+        message: 'Sucesso na atualização da receita!',
+        type: 'success', 
+      });
+      navigation.navigate('home')  
     }
     catch(error) {
+      showMessage({
+        backgroundColor:'#E06F72',
+        message: 'Erro na atualização da receita!',
+        type:'warning', 
+      });
       console.error("Erro ao atualizar receita: ", error);
     }
   }

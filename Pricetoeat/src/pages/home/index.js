@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import FAB from '../../../components/Button/FAB.js';
-import { ConsultaProduto } from '../../consultas/produto/index.js'
-import { ConsultaBase } from '../../consultas/bases/index.js';
-import { ConsultaReceita } from '../../consultas/receita/index.js';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import FAB from '../../components/Button/FAB.js';
+import { ConsultaProduto } from '../consultas/produto/index.js'
+import { ConsultaBase } from '../consultas/bases/index.js';
+import { ConsultaReceita } from '../consultas/receita/index.js';
 import { useFonts } from 'expo-font';
 
 export function Cadastros() {
@@ -13,9 +13,9 @@ export function Cadastros() {
   const [isPressedBase, setIsPressedBase] = useState(false);
   const [isPressedProduto, setIsPressedProduto] = useState(false);
   const [loaded] = useFonts({
-    'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
-    'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
-    'Quicksand-Medium': require('../../../assets/fonts/Quicksand-Medium.ttf'),
+    'Quicksand-Regular': require('../../assets/fonts/Quicksand-Regular.ttf'),
+    'Quicksand-Bold': require('../../assets/fonts/Quicksand-Bold.ttf'),
+    'Quicksand-Medium': require('../../assets/fonts/Quicksand-Medium.ttf'),
   });
   if (!loaded) {
     return null;
@@ -77,7 +77,7 @@ export function Cadastros() {
           { isPressedProduto && <ConsultaProduto /> }
           { isPressedBase && <ConsultaBase /> }
           { isPressedReceita && <ConsultaReceita /> }
-      </View>
+        </View>
         <FAB />
       </View>
   );

@@ -3,8 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { firestore, auth } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 
 export default function QtyProdutos({ route, navigation }) {
     const { receita } = route.params;

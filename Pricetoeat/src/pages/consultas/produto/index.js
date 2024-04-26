@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
-import { useState, useEffect, useSyncExternalStore } from 'react';
+import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { collection, getDocs, doc, deleteDoc, query, where} from "firebase/firestore";
+import { collection, doc, deleteDoc, query, where, onSnapshot} from "firebase/firestore";
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -26,7 +26,7 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
     };
     const flashMessageErro = () => {
         showMessage({
-            message: 'Erro ao excluir item',
+            message: 'Erro ao excluir item.',
             type: 'info',
         });
     };
@@ -80,37 +80,53 @@ function ProdutoItem({ produto, setNavigateToNomearReceita, press }) {
         </TouchableOpacity>
     );
 }
-
 export function ConsultaProduto() {
     const [produtos, setProdutos] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [navigateToNomearReceita, setNavigateToNomearReceita] = useState(false);
     const navigation = useNavigation();
-
+  
     const handleEdit = (produto) => {
         navigation.navigate('editaProduto', { produto });
-      };
+    };
 
     async function consultarProdutos() {
         const user = auth.currentUser;
         if (user) {
-                try {
-                    const produtosSnapshot = await getDocs(query(collection(firestore, 'produtos'), where('IDUsuario', '==', user.uid)));
+            try {
+                const q = query(collection(firestore, 'produtos'), where('IDUsuario', '==', user.uid));
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const produtosArray = [];
-                    produtosSnapshot.forEach((doc) => {
+                    querySnapshot.forEach((doc) => {
                         const produto = {
                             id: doc.id,
-                            ...doc?.data(),
+                            ...doc.data(),
                         };
-                        produtosArray?.push(produto);
+                        produtosArray.push(produto);
                     });
                     setProdutos(produtosArray);
                     setIsLoading(false);
-                } catch (error) {
-                    console.error('Erro ao consultar produtos:', error);
-                }
+                });
+                return unsubscribe;
+            } catch (error) {
+                console.error('Erro ao consultar produtos:', error);
+                setIsLoading(false);
             }
-    }
+        }
+    } 
+        
+    const deletarProduto = async (produtoId) => {
+        try {
+            const produtoRef = doc(collection(firestore, 'produtos'), produtoId);
+            await deleteDoc(produtoRef);
+            console.log('excluído');
+            flashMessageSucesso();
+        } catch (error) {
+            console.error('erro ao excluir o produto', error);
+            flashMessageErro();
+        }
+    };
+
     useEffect(() => {
         if (navigateToNomearReceita) {
             navigation.navigate("nomearReceita", 
@@ -119,33 +135,38 @@ export function ConsultaProduto() {
         }
     }, [navigateToNomearReceita]);
     useEffect(() => {
-        consultarProdutos();
-    },[])
+            consultarProdutos();
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
             {isLoading ? (
-                <View style={styles.content}>
+                    <View style={{marginTop:'15%'}}>
                     <LottieView
                         source={require('../../../assets/waitingAnimation.json')}
-                        autoPlay
-                        loop />
-                </View>) : (
+                        autoPlay={true}
+                        loop={true}
+                        style={{ width: 200, height: 200 }}
+                        />
+                </View>
+                ) : (
                 <animatable.View animation={'fadeInRight'}>
                     <FlatList style={styles.flat}
                         data={produtos}
                         keyExtractor={(item) => item?.id}
-                        renderItem={({ item }) => 
-                            <ProdutoItem 
-                                produto={ item }
+                        renderItem={({ item }) =>
+                            <ProdutoItem
+                                produto={item}
                                 press={handleEdit}
-                                setNavigateToNomearReceita={ setNavigateToNomearReceita } />}
-                        scrollEnabled/>
+                                setNavigateToNomearReceita={setNavigateToNomearReceita}
+                                deletarProduto={deletarProduto} />}
+                        scrollEnabled />
                 </animatable.View>
             )}
         </SafeAreaView>
     )
 }
+
 
 const styles = StyleSheet.create({
     container: {

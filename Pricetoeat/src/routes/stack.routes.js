@@ -1,11 +1,10 @@
 import Signin from '../pages/signin';
 import Welcome from '../pages/welcome'
 import { TabBases } from './tab.routes';
-import CadastroUsuario from '../pages/cadastroUser';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CadastroProduto from '../pages/cadastros/cadastroProduto';
 import CadastroReceita from '../pages/cadastros/cadastroReceita';
-import { Cadastros } from '../pages/home/cadastros';
+import { Cadastros } from '../pages/home';
 import { NomearReceita } from '../components/receita';
 import EditarProdutoScreen from '../pages/edicoes/editaProduto';
 import EditarReceitaScreen from '../pages/edicoes/editaReceita';

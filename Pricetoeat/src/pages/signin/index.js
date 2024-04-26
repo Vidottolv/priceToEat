@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword, getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from "react";
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Button, Image, PermissionsAndroid, launchImageLibrary, useEffect,ScrollView} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal ,ScrollView} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { showMessage } from 'react-native-flash-message';
 import * as animatable from 'react-native-animatable';
@@ -328,30 +328,6 @@ const styles = StyleSheet.create({
     },
     forgetText:{
         color:'#000'
-    },
-    buttonSelectPhoto:{
-        backgroundColor:'#99BC85',
-        borderRadius:72,
-        paddingVertical:8,
-        height:120,
-        width:120,
-        marginBottom:10,
-        justifyContent:'center',
-        alignItems:'center',
-        alignSelf:'center',
-        borderWidth:2,
-        borderColor:'#BFD8AF'
-    },
-    selectedImage:{
-        width:120,
-        height:120,
-        borderRadius:72,
-        borderWidth:2,
-        borderColor:'#BFD8AF'
-    },
-    buttonPhotoText:{
-        color:'#FFF',
-        fontFamily:'Quicksand-Regular'
     },
     underline: {
         textDecorationLine: 'underline'

@@ -36,7 +36,6 @@ const Welcome = () => {
           <LottieView
             source={require('../../assets/json/Animation - start app.json')}
             autoPlay={true}
-            loop={false}
             style={styles.lottieView}
           />
       </LinearGradient>

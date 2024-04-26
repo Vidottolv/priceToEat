@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { collection, getDocs, doc, deleteDoc, query, where } from "firebase/firestore";
+import { collection, doc, deleteDoc, query, where,onSnapshot } from "firebase/firestore";
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -81,37 +81,45 @@ export function ConsultaBase() {
     };
     
     async function consultarBases() {
-        try {
-            const user = auth.currentUser;
-
-            const basesSnapshot = await getDocs(query(collection(firestore, 'bases'), where('IDUsuario', '==', user.uid)));
-            const basesArray = [];
-            basesSnapshot.forEach((doc) => {
-                const base = {
-                    id: doc.id,
-                    ...doc.data(),
-                };
-                basesArray.push(base);
-            });
-            setBases(basesArray);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Erro ao consultar bases:', error);
+        const user = auth.currentUser;
+        if (user) {
+            try {
+                console.log('eai')
+                const q = query(collection(firestore, 'bases'), where('IDUsuario', '==', user.uid));
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const basesArray = [];
+                    querySnapshot.forEach((doc) => {
+                        const base = {
+                            id: doc.id,
+                            ...doc.data(),
+                        };
+                        basesArray.push(base);
+                    });
+                    setBases(basesArray);
+                    setIsLoading(false);
+                });
+                return unsubscribe;
+            } catch (error) {
+                console.error('Erro ao consultar Bases:', error);
+                setIsLoading(false);
+            }
         }
-    }
-        useEffect(() => {
+    } 
+    useEffect(() => {
         consultarBases();
     },[])
 
     return (
         <SafeAreaView style={styles.container}>
             {isLoading ? (
-                    <View style={styles.content}>
-                        <LottieView
-                            source={require('../../../assets/waitingAnimation.json')}
-                            autoPlay
-                            loop />
-                    </View>
+                    <View style={{marginTop:'15%'}}>
+                    <LottieView
+                        source={require('../../../assets/waitingAnimation.json')}
+                        autoPlay={true}
+                        loop={true}
+                        style={{ width: 200, height: 200 }}
+                        />
+                </View>
                     ) : (
                         <animatable.View animation={'fadeInRight'}>
                             <FlatList style={styles.flat}

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image
 import { useState, useEffect } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
-import { collection, getDocs, doc, deleteDoc, query, where} from "firebase/firestore";
+import { collection, doc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
 import { showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -51,11 +51,11 @@ function ReceitaItem({ receita, onPressItem }) {
         return false;
     };
     const mensagem = () => {
-        if(receita.lucroPercent == 0) {
-            return ( <Text style={styles.textVerMais}>Clique para cadastrar o Lucro.</Text> );
-        }
         if(receita.custoReceita == 0) {
             return ( <Text style={styles.textVerMais}>Há produtos sem Qtd. Clique para cadastrar.</Text> )
+        }
+        if(receita.lucroPercent == 0) {
+            return ( <Text style={styles.textVerMais}>Clique para cadastrar o Lucro.</Text> );
         }
         else {
             return( <Text style={styles.textVerMais}>Clique para ver a receita completa.</Text> );    
@@ -89,7 +89,7 @@ function ReceitaItem({ receita, onPressItem }) {
                     <View style={styles.subContainerComponent}>
                         <View>
                             <Text style={styles.textCompound}>Custo: R${receita?.custoReceita}</Text>
-                            <Text style={styles.textCompound}>Preço de Venda: R${preco}</Text>
+                            <Text style={styles.textCompound}>Preço de Venda: R${preco.toFixed(2)}</Text>
                             <Text style={styles.textCompound}>Percentual de Lucro: {receita?.lucroPercent}%</Text>
                             {mensagem()}
                         </View>
@@ -112,52 +112,59 @@ export function ConsultaReceita() {
     };
     
     async function consultarReceitas() {
-        try {
-            const user = auth.currentUser;
-            const receitasSnapshot = await getDocs(query(collection(firestore, 'receitas'), where('IDUsuario', '==', user.uid)));
-            const receitasArray = [];
-            receitasSnapshot.forEach((doc) => {
-                const receita = {
-                    id: doc.id,
-                    ...doc.data(),
-                };
-                receitasArray.push(receita);
-            });
-            setReceitas(receitasArray);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Erro ao consultar receitas:', error);
+        const user = auth.currentUser;
+        if (user) {
+            try {
+                console.log('log')
+                const q = query(collection(firestore, 'receitas'), where('IDUsuario', '==', user.uid));
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const receitasArray = [];
+                    querySnapshot.forEach((doc) => {
+                        const receita = {
+                            id: doc.id,
+                            ...doc.data(),
+                        };
+                        receitasArray.push(receita);
+                    });
+                    setReceitas(receitasArray);
+                    setIsLoading(false);
+                });
+                return unsubscribe;
+            } catch (error) {
+                console.error('Erro ao consultar produtos:', error);
+                setIsLoading(false);
+            }
         }
     }
-        useEffect(() => {
+    useEffect(() => {
         consultarReceitas();
     },[])
 
     return (
         <SafeAreaView style={styles.container}>
             {isLoading ? (
-                    <View style={styles.content}>
-                        <LottieView
-                            source={require('../../../assets/waitingAnimation.json')}
-                            autoPlay
-                            loop />
-                    </View>
-                    ) : (
-                        <animatable.View animation={'fadeInRight'}>
-                            <FlatList style={styles.flat}
-                            data={receitas}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <ReceitaItem
-                                receita={item}
-                                onPressItem={handleOpenModal}
-                                />
-                            )}
+                <View style={{marginTop:'15%'}}>
+                    <LottieView
+                        source={require('../../../assets/waitingAnimation.json')}
+                        autoPlay={true}
+                        loop={true}
+                        style={{ width: 200, height: 200 }}
+                        />
+                </View>
+                ) : (
+                    <animatable.View animation={'fadeInRight'}>
+                        <FlatList style={styles.flat}
+                        data={receitas}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <ReceitaItem
+                            receita={item}
+                            onPressItem={handleOpenModal}
                             />
+                        )}
+                        />
                         <ModalMostraReceita modalVisible={openModal} receita={receitaId} handleClose={() => setOpenModal(false)} />
-                    </animatable.View>
-                    )
-            }
+                    </animatable.View>)}
         </SafeAreaView>
     )
 }
@@ -172,8 +179,15 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
+    // lottieView: {
+    //     flex:1,
+    //     justifyContent:'center',
+    //     alignContent:'center',
+    //     alignSelf:'center',
+    //     alignItems:'center'
+    //   },
     subContainerComponent: {
         flexDirection: 'row',
         justifyContent: 'space-between',

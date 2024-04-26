@@ -2,8 +2,6 @@ import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Scrol
 import {Ionicons} from '@expo/vector-icons'
 import { useState } from 'react';
 import * as animatable from 'react-native-animatable'
-import  { RadioButtonItem, RadioButtonGroup } from 'expo-radio-button';
-import NumericInput from 'react-native-numeric-input'
 import { firestore, auth } from '../../../controller';
 import { collection, addDoc } from "firebase/firestore"; 
 import { useNavigation } from '@react-navigation/native';
@@ -26,7 +24,7 @@ export default function CadastroReceita(){
         showMessage({
             backgroundColor:'#E06F72',
             message: 'Erro no Cadastro! Preencha todos os campos.',
-            type: 'info', // Pode ser 'info', 'success', 'warning' ou 'danger'
+            type: 'info',
         });
     }
 
@@ -42,7 +40,6 @@ export default function CadastroReceita(){
                         UnidadeMedida: current,
                         IDUsuario: uid,
                     });
-                    // console.log(docRef);
                     setNomeProduto('');
                 }
                 flashMessageSucesso();
@@ -63,37 +60,6 @@ export default function CadastroReceita(){
                                         name='home'/>
                             </TouchableOpacity>
                     </View>
-                {/* <Text style={styles.subtitle}>Nome do produto</Text>
-                    <TextInput
-                        placeholder="Digite o ingrediente"
-                        placeholderTextColor={'#F3F3FF'}
-                        value={nomeProduto}
-                        onChangeText={(value) => setNomeProduto(value)}
-                        style={styles.input}/>
-                <Text style={styles.subtitle}>Unidade de Medida</Text>
-                <RadioButtonGroup
-                    selected={current}
-                    onSelected={(value) => setCurrent(value)}
-                    radioBackground="black">
-                        <RadioButtonItem value='1' label={<Text style={styles.textRadio}> Kilos (Kg)</Text>} style={styles.radio}/>
-                        <RadioButtonItem value='2' label={<Text style={styles.textRadio}> Gramas (g)</Text>} style={styles.radio}/>
-                        <RadioButtonItem value='3' label={<Text style={styles.textRadio}> Litros (Lt)</Text>} style={styles.radio}/>
-                        <RadioButtonItem value='4' label={<Text style={styles.textRadio}> Mililitros (Ml)</Text>} style={styles.radio}/>
-                        <RadioButtonItem value='5' label={<Text style={styles.textRadio}> Unidade (Un)</Text>} style={styles.radio}/>
-                </RadioButtonGroup>
-                <Text style={styles.subtitle}>Preço do produto</Text>
-                    <NumericInput 
-                        value={precoProduto} onChange={value => setPrecoProduto(value)}
-                        rounded valueType='real'
-                        totalWidth={170} totalHeight={50}
-                        textColor={'white'} borderColor={'#F3F3FF'} rightButtonBackgroundColor={'#F3F3FF'} leftButtonBackgroundColor={'#F3F3FF'}/>
-                <Text style={styles.subtitle}>Tamanho do produto</Text>
-                <Text style={styles.rodape}>** Cadastre o peso/litragem/unidade do produto. Ex: Para uma barra de chocolate de 2Kg, cadastre 2 no campo abaixo e selecione Kg em Unidade de Medida.</Text>
-                <NumericInput 
-                        value={tamProdBruto} onChange={value => setTamProdBruto(value)}
-                        rounded 
-                        totalWidth={170} totalHeight={50}
-                        textColor={'white'} borderColor={'#F3F3FF'} rightButtonBackgroundColor={'#F3F3FF'} leftButtonBackgroundColor={'#F3F3FF'}/> */}
                 <TouchableOpacity style={styles.buttonCadastrar} onPress={cadastraProduto}>
                     <Text style={styles.textButton}>Cadastrar</Text>
                 </TouchableOpacity>

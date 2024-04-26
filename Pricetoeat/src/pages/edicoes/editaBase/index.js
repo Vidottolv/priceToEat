@@ -85,82 +85,82 @@ export default function EditarBaseScreen({ route, navigation }) {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        flex: 1,
-        width:'100%'
-    },
-    compound: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        width:'100%'
-    },
-    title: {
-        fontSize: 30,
-        fontFamily: 'Quicksand-Bold',
-        color: '#99BC85',
-        marginLeft: '3%',
-        marginTop: '13%',
-        textShadowRadius: 4,
-        textShadowColor: '#BFD8AF',
-        textShadowOffset: {
-            width: 4,
-            height: 2
-        }
-    },
-    subtitle: {
-      fontSize: 20,
-      fontFamily: 'Quicksand-Regular',
-      color: '#99BC85',
-      marginBottom: '1%',
-      borderColor: '#000',
+  container: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    flex: 1,
+    width:'100%'
   },
-    input: {
-        color: '#000',
-        backgroundColor: '#E1F0DA',
-        borderWidth: 2,
-        borderRadius: 20,
-        padding: 10,
-        paddingLeft: 20,
-        height: 40,
-        fontSize: 14,
-        borderColor: '#99BC85',
-        marginBottom:15
-    },
-    backButton: {
-        marginRight: '5%',
-        marginTop: '13%'
-    },
-    headerModal: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-        borderBottomWidth: 3,
-        borderColor: '#99BC85',
-        backgroundColor: '#D4E7C5',
-        height: 130,  
-    },
-    underline: {
-        textDecorationLine: 'underline'
-    },
-    buttonCadastrar: {
-        justifyContent: 'center',
-        alignSelf: 'center',
-        height: 45,
-        width: '100%',
-        marginTop: 10,
-        marginBottom: 6,
-        padding: 4,
-        borderRadius: 40,
-        borderWidth: 3,
-        borderColor: '#99BC85',
-        backgroundColor: '#D4E7C5'
-    },
-    textButton: {
-        color: '#000',
-        fontFamily: 'Quicksand-Regular',
-        alignSelf: 'center'
+  compound: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    width:'100%'
+  },
+  title: {
+    fontSize: 30,
+    fontFamily: 'Quicksand-Bold',
+    color: '#99BC85',
+    marginLeft: '3%',
+    marginTop: '13%',
+    textShadowRadius: 4,
+    textShadowColor: '#BFD8AF',
+    textShadowOffset: {
+      width: 4,
+      height: 2
     }
+  },
+  subtitle: {
+    fontSize: 20,
+    fontFamily: 'Quicksand-Regular',
+    color: '#99BC85',
+    marginBottom: '1%',
+    borderColor: '#000',
+  },
+  input: {
+    color: '#000',
+    backgroundColor: '#E1F0DA',
+    borderWidth: 2,
+    borderRadius: 20,
+    padding: 10,
+    paddingLeft: 20,
+    height: 40,
+    fontSize: 14,
+    borderColor: '#99BC85',
+    marginBottom:15
+  },
+  backButton: {
+    marginRight: '5%',
+    marginTop: '13%'
+  },
+  headerModal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    borderBottomWidth: 3,
+    borderColor: '#99BC85',
+    backgroundColor: '#D4E7C5',
+    height: 130,  
+  },
+  underline: {
+    textDecorationLine: 'underline'
+  },
+  buttonCadastrar: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 45,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 6,
+    padding: 4,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: '#99BC85',
+    backgroundColor: '#D4E7C5'
+  },
+  textButton: {
+    color: '#000',
+    fontFamily: 'Quicksand-Regular',
+    alignSelf: 'center'
+  }
 })
 

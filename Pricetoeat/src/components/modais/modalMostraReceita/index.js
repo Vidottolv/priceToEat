@@ -4,7 +4,7 @@ import React from "react";
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 
-export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
+export function ModalMostraReceita({ modalVisible, receita, handleClose, updateConsultaReceitas }) {
   const [loaded] = useFonts({
     'Quicksand-Regular': require('../../../assets/fonts/Quicksand-Regular.ttf'),
     'Quicksand-Bold': require('../../../assets/fonts/Quicksand-Bold.ttf'),
@@ -40,7 +40,7 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
     if (custoZero) {
       return(
         <TouchableOpacity
-          onPress={() => navigation.navigate('QtyProdutos', { receita: receita })}
+          onPress={() => navigation.navigate('QtyProdutos', { receita: receita, updateConsultaReceitas: updateConsultaReceitas })}
           style={styles.botaoReceita}>
           <Text style={[styles.textoReceita, styles.underline]}>Cadastre as quantidades</Text>
         </TouchableOpacity>
@@ -55,7 +55,7 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
       if(!custoZero){
         return(
           <TouchableOpacity
-            onPress={() => navigation.navigate('lucroReceita', { receita: receita })}
+            onPress={() => navigation.navigate('lucroReceita', { receita: receita, updateConsultaReceitas: updateConsultaReceitas })}
             style={styles.botaoReceita}>
             <Text style={[styles.textoReceita, styles.underline]}>Cadastre o Lucro</Text>
           </TouchableOpacity>
@@ -87,10 +87,10 @@ export function ModalMostraReceita({ modalVisible, receita, handleClose }) {
           <View style={styles.body}>
             <View style={{height:'85%'}}>
               <Text style={styles.text}>
-                - Custo da Receita: R${receita?.custoReceita}
+                - Custo da Receita: R${(receita?.custoReceita)?.toFixed(2)}
               </Text>
               <Text style={styles.text}>
-                - Preço de Venda: R${receita?.custoReceita * (1 + (receita?.lucroPercent / 100))}               
+                - Preço de Venda: R${(receita?.custoReceita * (1 + (receita?.lucroPercent / 100))).toFixed(2)}               
               </Text>
               <Text style={styles.text}>
                 - Lucro: {receita?.lucroPercent}%
