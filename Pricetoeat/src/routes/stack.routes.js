@@ -14,6 +14,7 @@ import FirstSteps from '../components/FirstsSteps';
 import LucroReceita from '../components/screens/lucro';
 import ImagemReceita from '../components/screens/imagem';
 
+
 const Stack = createNativeStackNavigator();
 
 export function StackRoutes(){

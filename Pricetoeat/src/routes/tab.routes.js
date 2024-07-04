@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from '@expo/vector-icons'
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { CadastroBase } from "../pages/cadastros/cadastroBase";
 import ProdutosSelecionados  from "../pages/cadastros/cadastroBase/produtosSelecionados";
 

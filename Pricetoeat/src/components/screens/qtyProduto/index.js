@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { firestore, auth } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
+import { showMessage } from 'react-native-flash-message';
 
 export default function QtyProdutos({ route, navigation }) {
     const { receita } = route.params;
@@ -41,9 +42,23 @@ export default function QtyProdutos({ route, navigation }) {
         };
         try {
             await updateDoc(receitaRef, docData);
+            console.log(updateDoc, receitaRef)
             console.log('Quantidades e custos atualizados com sucesso!');
-            navigation.navigate('home');
+            showMessage({
+              backgroundColor: '#0bbd29',
+              message: "Sucesso na atualização das quantidades.",
+              type: 'success',
+          })
+            setTimeout(() => 
+              navigation.navigate('home'), 
+              duration = 1000);
         } catch (error) {
+          showMessage({
+            backgroundColor: '#E06F72',
+            message: "Erro na atualização das quantidades.",
+            type: 'warning',
+            duration:2500
+          });
             console.error('Erro ao atualizar as quantidades e custos:', error);
         }
     }

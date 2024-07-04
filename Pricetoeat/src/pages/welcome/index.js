@@ -12,7 +12,7 @@ const Welcome = () => {
     const splashScreenTime = 3.5; 
     setTimeout(() => {
       navigation.replace('signin'); 
-    }, splashScreenTime * 1000);
+    }, splashScreenTime * 10000);
   }, []);
 
   const [loaded] = useFonts({

@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Image,RefreshControl } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
 import * as animatable from 'react-native-animatable'
 import { firestore, auth } from '../../../controller';
 import { collection, doc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
 import { showMessage } from 'react-native-flash-message';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { useFonts } from 'expo-font';
 import { ModalMostraReceita } from '../../../components/modais/modalMostraReceita';
@@ -30,6 +30,7 @@ function ReceitaItem({ receita, onPressItem }) {
         showMessage({
             message: 'Erro ao excluir item',
             type: 'info',
+            backgroundColor: '#E06F72'
         });
     };
     const deletar = async () => {
@@ -42,14 +43,6 @@ function ReceitaItem({ receita, onPressItem }) {
             console.error('erro ao excluir a base', error);
             flashMessageErro();
         }} 
-    const verificarValoresNulos = () => {
-        for (const produto of receita.ProdutosReceita) {
-            if (produto.quantidade == 0 || produto.custo == 0) {
-                return true;
-            }
-        }
-        return false;
-    };
     const mensagem = () => {
         if(receita.custoReceita == 0) {
             return ( <Text style={styles.textVerMais}>Há produtos sem Qtd. Clique para cadastrar.</Text> )
@@ -62,11 +55,7 @@ function ReceitaItem({ receita, onPressItem }) {
         }
     }
     const handlePressItem = () => {
-        if (verificarValoresNulos()) {
-            onPressItem(receita);
-        } else {
-            onPressItem(receita);
-        }
+        onPressItem(receita);
     };
     let lucro = 1 + (receita?.lucroPercent / 100);
     let preco = receita?.custoReceita * lucro; 
@@ -106,6 +95,7 @@ export function ConsultaReceita() {
     const navigation = useNavigation();
     const [receitaId, setReceitaId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const handleOpenModal = (receita) => {
         setReceitaId(receita);
         setOpenModal(true);
@@ -115,7 +105,7 @@ export function ConsultaReceita() {
         const user = auth.currentUser;
         if (user) {
             try {
-                console.log('log')
+                console.log('alo')
                 const q = query(collection(firestore, 'receitas'), where('IDUsuario', '==', user.uid));
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const receitasArray = [];
@@ -140,6 +130,26 @@ export function ConsultaReceita() {
         consultarReceitas();
     },[])
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        consultarReceitas().then(() => setRefreshing(false));
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (navigation.isFocused()) {
+                onRefresh();
+            }
+        }, [navigation])
+    );
+
+    // const onRefresh = React.useCallback(() => {
+    //     setRefreshing(true);
+    //     setTimeout(() => {
+    //       setRefreshing(false);
+    //     }, 2000);
+    //   }, []);
+
     return (
         <SafeAreaView style={styles.container}>
             {isLoading ? (
@@ -156,12 +166,19 @@ export function ConsultaReceita() {
                         <FlatList style={styles.flat}
                         data={receitas}
                         keyExtractor={(item) => item.id}
+                        scrollEnabled={true}
                         renderItem={({ item }) => (
                             <ReceitaItem
                             receita={item}
                             onPressItem={handleOpenModal}
                             />
                         )}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                         />
                         <ModalMostraReceita modalVisible={openModal} receita={receitaId} handleClose={() => setOpenModal(false)} />
                     </animatable.View>)}

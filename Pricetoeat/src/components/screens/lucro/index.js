@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native
 import { firestore, auth } from '../../../controller';
 import { doc, updateDoc} from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
+import { showMessage } from 'react-native-flash-message';
 
 export default function LucroReceita({ route, navigation }) {
     const { receita } = route.params;
@@ -17,9 +18,23 @@ export default function LucroReceita({ route, navigation }) {
         };
         try {
           await updateDoc(receitaRef, docData);
+          showMessage({
+            backgroundColor: '#0bbd29',
+            message: "Sucesso na atualização das quantidades.",
+            type: 'success',
+        })
+          setTimeout(() => 
+            navigation.navigate('home'), 
+            duration = 1000);
           console.log('Lucro percentual da receita atualizado com sucesso!');
           navigation.navigate('home');
         } catch (error) {
+          showMessage({
+            backgroundColor: '#E06F72',
+            message: "Erro na atualização das quantidades.",
+            type: 'warning',
+            duration:2500
+          });
           console.error('Erro ao atualizar o lucro percentual:', error);
         }
       }
